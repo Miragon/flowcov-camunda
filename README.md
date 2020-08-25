@@ -43,7 +43,7 @@
 
 Improve your workflow and decision models by testing them just as you test your code. FlowCov provides highly integrated tools to create, merge, archive and display coverage reports.
 
-Here's why:
+Why you should use it:
 * Create coverage reports easily
 * Integrates into every CI provider
 * Upload reports with one line
