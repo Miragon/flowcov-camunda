@@ -3,7 +3,7 @@
 <br />
 <p align="center">
   <a href="https://www.flowsquad.io/">
-    <img src="img/logo.svg" alt="Logo" width="80" height="80">
+    <img src="img/logo.svg" alt="Logo" width="300" height="100">
   </a>
 
   <h3 align="center">FlowCov Camunda</h3>
