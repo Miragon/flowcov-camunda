@@ -1,0 +1,43 @@
+allprojects {
+    apply plugin: 'java'
+}
+
+subprojects {
+    apply plugin: 'maven-publish'
+
+    group 'io.flowcov'
+
+    ext.springVersion = '2.3.1.RELEASE'
+    ext.lombokVersion = '1.18.12'
+    ext.commonsIOVersion = '2.5'
+    ext.commonsLangVersion = '3.4'
+    ext.hamcrestVersion = '1.3'
+    ext.junitVersion = '4.12'
+    ext.camundaVersion = '7.13.0'
+    ext.camundaCompileVersion = '7.13.0'
+    ext.springVersion = '3.1.2.RELEASE'
+
+    sourceCompatibility = JavaVersion.VERSION_11
+
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+
+    dependencies {
+        implementation "commons-io:commons-io:${commonsIOVersion}"
+        implementation "org.apache.commons:commons-lang3:${commonsLangVersion}"
+        implementation "org.hamcrest:hamcrest-library:${hamcrestVersion}"
+        implementation "junit:junit:${junitVersion}"
+
+        testImplementation 'com.h2database:h2:1.3.168'
+        testImplementation "org.springframework:spring-test:${springVersion}"
+
+        / * Lombok dependencies * /
+        compileOnly "org.projectlombok:lombok:${lombokVersion}"
+        annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+
+        testCompileOnly "org.projectlombok:lombok:${lombokVersion}"
+        testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+    }
+}

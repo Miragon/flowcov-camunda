@@ -1,0 +1,40 @@
+version = '0.1.0'
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src/main/java']
+        }
+        resources {
+            srcDirs = ['src/main/resources']
+        }
+    }
+    test {
+        java {
+            srcDirs = ['src/test/java']
+        }
+        resources {
+            srcDirs = ['src/test/resources']
+        }
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
+}
+
+dependencies {
+    compileOnly "org.camunda.bpm:camunda-engine:${camundaCompileVersion}"
+    compileOnly "org.camunda.bpm:camunda-engine-spring:${camundaCompileVersion}"
+    compileOnly "org.springframework:spring-context:${springVersion}"
+
+    implementation 'com.google.code.gson:gson:2.8.6'
+}
+
+test {
+    useJUnitPlatform()
+}
