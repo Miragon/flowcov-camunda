@@ -48,6 +48,7 @@ Why you should use it:
 * Integrates into every CI provider
 * Upload reports with one line
 
+<br/>
 Many thanks to the creators of the [Camunda BPM Process Test Coverage](https://github.com/camunda/camunda-bpm-process-test-coverage), which we took as an example for the coverage data generation.
 
 <!-- GETTING STARTED -->
