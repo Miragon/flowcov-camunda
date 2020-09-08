@@ -3,6 +3,8 @@ allprojects {
 }
 
 subprojects {
+
+
     apply plugin: 'maven-publish'
 
     group 'io.flowcov'

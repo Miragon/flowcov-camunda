@@ -16,6 +16,7 @@
 
 package io.flowcov.camunda.model;
 
+import org.camunda.bpm.engine.repository.DecisionDefinition;
 import org.camunda.bpm.engine.repository.ProcessDefinition;
 
 import java.util.Set;
@@ -49,6 +50,15 @@ public interface AggregatedCoverage {
      */
     Set<String> getCoveredSequenceFlowIds(String processDefinitionKey);
 
+
+    /**
+     * Retrieces covered dmn rules for the given decision key
+     *
+     * @param decisionKey
+     * @return
+     */
+    Set<CoveredDmnRule> getCoveredDecisionRules(String decisionKey);
+
     /**
      * Retrieves covered sequence flow IDs for the given process definition key.
      *
@@ -63,6 +73,14 @@ public interface AggregatedCoverage {
      * @return
      */
     Set<ProcessDefinition> getProcessDefinitions();
+
+
+    /**
+     * Retrieves the decision definitions of the coverage.
+     *
+     * @return
+     */
+    Set<DecisionDefinition> getDecisionDefinitions();
 
     /**
      * Retrives the coverage percentage for all process definitions.

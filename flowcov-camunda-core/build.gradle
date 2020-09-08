@@ -1,4 +1,74 @@
-version = '0.1.0'
+buildscript {
+    repositories {
+        jcenter()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.bmuschko:gradle-nexus-plugin:2.3.1'
+    }
+}
+
+
+apply plugin: 'com.bmuschko.nexus'
+
+archivesBaseName = 'flowcov-camunda-core'
+group = "io.flowcov"
+version = "0.1.1"
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            groupId = 'io.flowcov'
+            artifactId = 'flowcov-camunda-core'
+            version = '0.1.1'
+
+            from components.java
+        }
+    }
+}
+
+modifyPom {
+    project {
+        name 'FlowCov Camunda'
+        description 'Generates Test Coverage Reports for FlowCov.'
+        url 'https://flowcov.io/'
+        inceptionYear '2020'
+
+        scm {
+            url 'https://github.com/FlowSquad/flowcov-camunda'
+            connection 'scm:https://github.com/FlowSquad/flowcov-camunda.git'
+            developerConnection 'scm:git://github.com/FlowSquad/flowcov-camunda.git'
+        }
+
+        licenses {
+            license {
+                name 'The Apache Software License, Version 2.0'
+                url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                distribution 'repo'
+            }
+        }
+
+        developers {
+            developer {
+                id 'dhflowsquad'
+                name 'Dominik Horn'
+                email 'dominik.horn@flowsquad.io'
+            }
+        }
+    }
+}
+
+extraArchive {
+    sources = true
+    tests = true
+    javadoc = true
+}
+
+nexus {
+    sign = true
+    repositoryUrl = 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
+    snapshotRepositoryUrl = 'https://oss.sonatype.org/content/repositories/snapshots/'
+}
 
 sourceSets {
     main {
@@ -19,15 +89,9 @@ sourceSets {
     }
 }
 
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            from components.java
-        }
-    }
-}
 
 dependencies {
+
     compileOnly "org.camunda.bpm:camunda-engine:${camundaCompileVersion}"
     compileOnly "org.camunda.bpm:camunda-engine-spring:${camundaCompileVersion}"
     compileOnly "org.springframework:spring-context:${springVersion}"

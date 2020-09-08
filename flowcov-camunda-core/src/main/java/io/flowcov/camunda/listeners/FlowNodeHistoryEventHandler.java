@@ -17,15 +17,20 @@
 package io.flowcov.camunda.listeners;
 
 import io.flowcov.camunda.junit.rules.CoverageTestRunState;
+import io.flowcov.camunda.model.CoveredDmnRule;
 import io.flowcov.camunda.model.CoveredFlowNode;
 import io.flowcov.camunda.util.Api;
-import org.camunda.bpm.engine.impl.history.event.HistoricActivityInstanceEventEntity;
-import org.camunda.bpm.engine.impl.history.event.HistoryEvent;
-import org.camunda.bpm.engine.impl.history.event.HistoryEventTypes;
+import lombok.val;
+import org.camunda.bpm.engine.history.HistoricDecisionOutputInstance;
+import org.camunda.bpm.engine.impl.history.event.*;
 import org.camunda.bpm.engine.impl.history.handler.DbHistoryEventHandler;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  * Extends the {@link DbHistoryEventHandler} in order to notify the process test
@@ -44,7 +49,7 @@ public class FlowNodeHistoryEventHandler extends DbHistoryEventHandler {
     }
 
     @Override
-    public void handleEvent(HistoryEvent historyEvent) {
+    public void handleEvent(final HistoryEvent historyEvent) {
         super.handleEvent(historyEvent);
 
         if (coverageTestRunState == null) {
@@ -54,7 +59,7 @@ public class FlowNodeHistoryEventHandler extends DbHistoryEventHandler {
 
         if (historyEvent instanceof HistoricActivityInstanceEventEntity) {
 
-            HistoricActivityInstanceEventEntity activityEvent = (HistoricActivityInstanceEventEntity) historyEvent;
+            final HistoricActivityInstanceEventEntity activityEvent = (HistoricActivityInstanceEventEntity) historyEvent;
 
             if (activityEvent.getActivityType().equals("multiInstanceBody"))
                 return;
@@ -63,20 +68,57 @@ public class FlowNodeHistoryEventHandler extends DbHistoryEventHandler {
                     new CoveredFlowNode(historyEvent.getProcessDefinitionKey(), activityEvent.getActivityId());
 
             // Cover event start
-            if (isInitialEvent(historyEvent)) {
+            if (this.isInitialEvent(historyEvent)) {
                 coverageTestRunState.addCoveredElement(coveredActivity);
             }
             // Cover event end
-            else if (isEndEvent(historyEvent)) {
+            else if (this.isEndEvent(historyEvent)) {
                 coverageTestRunState.endCoveredElement(coveredActivity);
             }
 
         }
 
+        if (historyEvent instanceof HistoricDecisionEvaluationEvent) {
+
+            val decisionEvent = (HistoricDecisionEvaluationEvent) historyEvent;
+            val rules = this.parseHistoricDecisionInstanceEntity(decisionEvent.getRootHistoricDecisionInstance());
+
+            if (decisionEvent.getRequiredHistoricDecisionInstances() != null && !decisionEvent.getRequiredHistoricDecisionInstances().isEmpty()) {
+                val requiredRules = decisionEvent.getRequiredHistoricDecisionInstances()
+                        .stream()
+                        .map(this::parseHistoricDecisionInstanceEntity)
+                        .flatMap(Collection::stream)
+                        .collect(Collectors.toList());
+                rules.addAll(requiredRules);
+            }
+
+            coverageTestRunState.addCoveredRules(rules);
+        }
+
     }
 
-    protected boolean isInitialEvent(HistoryEvent historyEvent) {
-        String isInitialEvent = "isInitialEvent";
+    private List<CoveredDmnRule> parseHistoricDecisionInstanceEntity(final HistoricDecisionInstanceEntity instance) {
+
+        if (instance.getOutputs() == null || instance.getOutputs().isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        return instance.getOutputs().stream()
+                .map(HistoricDecisionOutputInstance::getRuleId)
+                .distinct()
+                .map(rule -> CoveredDmnRule.builder()
+                        .decisionKey(instance.getDecisionDefinitionKey())
+                        .ruleId(rule)
+                        .drdKey(instance.getDecisionRequirementsDefinitionKey())
+                        .build()
+                )
+                .collect(Collectors.toList());
+    }
+
+
+    @Override
+    protected boolean isInitialEvent(final HistoryEvent historyEvent) {
+        final String isInitialEvent = "isInitialEvent";
         return Api.feature(DbHistoryEventHandler.class, isInitialEvent, HistoryEvent.class).isSupported() ? super.isInitialEvent(historyEvent) :
                 (Boolean) Api.feature(DbHistoryEventHandler.class, isInitialEvent, String.class).invoke(this, historyEvent.getEventType());
     }
@@ -94,16 +136,16 @@ public class FlowNodeHistoryEventHandler extends DbHistoryEventHandler {
      * @param historyEvent
      * @return
      */
-    private boolean isEndEvent(HistoryEvent historyEvent) {
+    private boolean isEndEvent(final HistoryEvent historyEvent) {
 
-        EnumSet<HistoryEventTypes> endEventTypes = EnumSet.of(
+        final EnumSet<HistoryEventTypes> endEventTypes = EnumSet.of(
                 HistoryEventTypes.ACTIVITY_INSTANCE_END,
                 HistoryEventTypes.PROCESS_INSTANCE_END,
                 HistoryEventTypes.TASK_INSTANCE_COMPLETE
         );
 
         // They should have handled compare/equals in the enum itself
-        for (HistoryEventTypes endEventType : endEventTypes) {
+        for (final HistoryEventTypes endEventType : endEventTypes) {
 
             if (historyEvent.getEventType().equals(endEventType.getEventName())) {
 
@@ -114,7 +156,7 @@ public class FlowNodeHistoryEventHandler extends DbHistoryEventHandler {
         return false;
     }
 
-    public void setCoverageTestRunState(CoverageTestRunState coverageTestRunState) {
+    public void setCoverageTestRunState(final CoverageTestRunState coverageTestRunState) {
         this.coverageTestRunState = coverageTestRunState;
     }
 

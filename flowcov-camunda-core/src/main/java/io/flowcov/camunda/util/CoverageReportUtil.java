@@ -21,11 +21,16 @@ import io.flowcov.camunda.api.bpmn.BpmnModel;
 import io.flowcov.camunda.api.bpmn.BpmnTestClass;
 import io.flowcov.camunda.api.bpmn.BpmnTestMethod;
 import io.flowcov.camunda.api.bpmn.FlowNode;
+import io.flowcov.camunda.api.dmn.DmnModel;
+import io.flowcov.camunda.api.dmn.DmnTestClass;
+import io.flowcov.camunda.api.dmn.DmnTestMethod;
+import io.flowcov.camunda.api.dmn.Rule;
 import io.flowcov.camunda.junit.rules.CoverageTestRunState;
 import io.flowcov.camunda.model.ClassCoverage;
 import lombok.val;
 import org.apache.commons.io.IOUtils;
 import org.camunda.bpm.engine.ProcessEngine;
+import org.camunda.bpm.engine.repository.DecisionDefinition;
 import org.camunda.bpm.engine.repository.ProcessDefinition;
 
 import java.io.FileInputStream;
@@ -57,9 +62,9 @@ public class CoverageReportUtil {
      * @param processEngine
      * @param coverageTestRunState
      */
-    public static void createClassReport(ProcessEngine processEngine, CoverageTestRunState coverageTestRunState) {
+    public static void createClassReport(final ProcessEngine processEngine, final CoverageTestRunState coverageTestRunState) {
 
-        ClassCoverage coverage = coverageTestRunState.getClassCoverage();
+        final ClassCoverage coverage = coverageTestRunState.getClassCoverage();
         final String reportDirectory = getReportDirectoryPath();
 
         createReport(coverage, reportDirectory, coverageTestRunState.getTestClassName());
@@ -73,20 +78,23 @@ public class CoverageReportUtil {
      * @param reportDirectory The directory where the report will be stored.
      * @param testClazz       Optional test class name for info box
      */
-    private static void createReport(ClassCoverage coverage, String reportDirectory, String testClazz) {
+    private static void createReport(final ClassCoverage coverage, final String reportDirectory, final String testClazz) {
 
         try {
-            val run = Build.builder()
-                    .build();
+            val build = new Build();
 
             for (val definition : coverage.getProcessDefinitions()) {
-                run.getBpmnModels().add(parseProcessDefinition(coverage, testClazz, definition));
+                build.getBpmnModels().add(parseProcessDefinition(coverage, testClazz, definition));
+            }
+
+            for (val definition : coverage.getDecisionDefinitions()) {
+                build.getDmnModels().add(parseDecisionDefinition(coverage, testClazz, definition));
             }
 
             FlowCovReporter.generateReport(
                     reportDirectory + '/' + testClazz + "/flowCovReport.json",
-                    run);
-        } catch (IOException ex) {
+                    build);
+        } catch (final IOException ex) {
 
             logger.log(Level.SEVERE, "Unable to load process definition!", ex);
             throw new RuntimeException();
@@ -94,7 +102,7 @@ public class CoverageReportUtil {
 
     }
 
-    private static BpmnModel parseProcessDefinition(ClassCoverage coverage, String testClazz, ProcessDefinition
+    private static BpmnModel parseProcessDefinition(final ClassCoverage coverage, final String testClazz, final ProcessDefinition
             processDefinition) throws IOException {
 
         val bpmnXml = getBpmnXml(processDefinition);
@@ -107,7 +115,7 @@ public class CoverageReportUtil {
                 .hash(bpmnXml.hashCode())
                 .build();
 
-        List<BpmnTestMethod> testMethods = coverage.getTestMethodCoverage()
+        final List<BpmnTestMethod> testMethods = coverage.getTestMethodCoverage()
                 .values()
                 .stream()
                 .filter(m -> m.getName() != null).map(value -> {
@@ -132,7 +140,52 @@ public class CoverageReportUtil {
 
                 }).collect(Collectors.toList());
 
-        var testClass = BpmnTestClass.builder()
+        final var testClass = BpmnTestClass.builder()
+                .name(testClazz)
+                .executionEndTime(LocalDateTime.now())
+                .testMethods(testMethods)
+                .build();
+
+        model.getTestClasses().add(testClass);
+
+        return model;
+    }
+
+
+    private static DmnModel parseDecisionDefinition(final ClassCoverage coverage, final String testClazz, final DecisionDefinition
+            decisionDefinition) throws IOException {
+
+        val bpmnXml = getDmnXml(decisionDefinition);
+
+        val model = DmnModel.builder()
+                .dmnXml(bpmnXml)
+                .decisionKey(decisionDefinition.getKey())
+                .name(decisionDefinition.getName())
+                .version(decisionDefinition.getVersionTag())
+                .hash(bpmnXml.hashCode())
+                .build();
+
+        final List<DmnTestMethod> testMethods = coverage.getTestMethodCoverage()
+                .values()
+                .stream()
+                .filter(m -> m.getName() != null).map(value -> {
+
+                    model.setRuleCount(value.getDecisionRuleCount(decisionDefinition.getKey()));
+                    val coveredFlowNodes = value.getCoveredDecisionRules(decisionDefinition.getKey())
+                            .stream()
+                            .map(rule -> Rule.builder()
+                                    .key(rule.getRuleId())
+                                    .build()
+                            ).collect(Collectors.toList());
+
+                    return DmnTestMethod.builder()
+                            .rules(coveredFlowNodes)
+                            .name(value.getName())
+                            .build();
+
+                }).collect(Collectors.toList());
+
+        final var testClass = DmnTestClass.builder()
                 .name(testClazz)
                 .executionEndTime(LocalDateTime.now())
                 .testMethods(testMethods)
@@ -160,12 +213,30 @@ public class CoverageReportUtil {
      * @return
      * @throws IOException Thrown if the BPMN resource is not found.
      */
-    protected static String getBpmnXml(ProcessDefinition processDefinition) throws IOException {
+    protected static String getBpmnXml(final ProcessDefinition processDefinition) throws IOException {
 
         InputStream inputStream = CoverageReportUtil.class.getClassLoader().getResourceAsStream(
                 processDefinition.getResourceName());
         if (inputStream == null) {
             inputStream = new FileInputStream(processDefinition.getResourceName());
+        }
+
+        return IOUtils.toString(inputStream);
+    }
+
+    /**
+     * Retrieves a decision definitions BPMN XML.
+     *
+     * @param decisionDefinition
+     * @return
+     * @throws IOException Thrown if the BPMN resource is not found.
+     */
+    protected static String getDmnXml(final DecisionDefinition decisionDefinition) throws IOException {
+
+        InputStream inputStream = CoverageReportUtil.class.getClassLoader().getResourceAsStream(
+                decisionDefinition.getResourceName());
+        if (inputStream == null) {
+            inputStream = new FileInputStream(decisionDefinition.getResourceName());
         }
 
         return IOUtils.toString(inputStream);

@@ -31,13 +31,13 @@ import java.util.List;
  */
 public class ProcessCoverageConfigurator {
 
-    public static void initializeProcessCoverageExtensions(ProcessEngineConfigurationImpl configuration) {
+    public static void initializeProcessCoverageExtensions(final ProcessEngineConfigurationImpl configuration) {
         initializeFlowNodeHandler(configuration);
         initializePathCoverageParseListener(configuration);
         initializeCompensationEventHandler(configuration);
     }
 
-    private static void initializePathCoverageParseListener(ProcessEngineConfigurationImpl configuration) {
+    private static void initializePathCoverageParseListener(final ProcessEngineConfigurationImpl configuration) {
         List<BpmnParseListener> bpmnParseListeners = configuration.getCustomPostBPMNParseListeners();
         if (bpmnParseListeners == null) {
             bpmnParseListeners = new LinkedList<BpmnParseListener>();
@@ -47,13 +47,12 @@ public class ProcessCoverageConfigurator {
         bpmnParseListeners.add(new PathCoverageParseListener());
     }
 
-    private static void initializeFlowNodeHandler(ProcessEngineConfigurationImpl configuration) {
+    private static void initializeFlowNodeHandler(final ProcessEngineConfigurationImpl configuration) {
         final FlowNodeHistoryEventHandler historyEventHandler = new FlowNodeHistoryEventHandler();
         configuration.setHistoryEventHandler(historyEventHandler);
-
     }
 
-    private static void initializeCompensationEventHandler(ProcessEngineConfigurationImpl configuration) {
+    private static void initializeCompensationEventHandler(final ProcessEngineConfigurationImpl configuration) {
         if (configuration.getCustomEventHandlers() == null) {
             configuration.setCustomEventHandlers(new LinkedList<EventHandler>());
         }

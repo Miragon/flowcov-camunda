@@ -17,9 +17,11 @@
 package io.flowcov.camunda.junit.rules;
 
 import io.flowcov.camunda.model.ClassCoverage;
+import io.flowcov.camunda.model.CoveredDmnRule;
 import io.flowcov.camunda.model.CoveredElement;
 import io.flowcov.camunda.model.MethodCoverage;
 import org.camunda.bpm.engine.ProcessEngine;
+import org.camunda.bpm.engine.repository.DecisionDefinition;
 import org.camunda.bpm.engine.repository.ProcessDefinition;
 
 import java.util.List;
@@ -43,6 +45,14 @@ public interface CoverageTestRunState {
      */
     void endCoveredElement(CoveredElement coveredElement);
 
+
+    /**
+     * Adds the covered DMN Rule
+     *
+     * @param coveredDmnRule
+     */
+    void addCoveredRules(List<CoveredDmnRule> coveredDmnRule);
+
     /**
      * Adds a test method to the class coverage.
      *
@@ -53,7 +63,8 @@ public interface CoverageTestRunState {
      * @param testName           The name of the test method.
      */
     void initializeTestMethodCoverage(ProcessEngine processEngine, String deploymentId,
-                                      List<ProcessDefinition> processDefinitions, String testName);
+                                      List<ProcessDefinition> processDefinitions,
+                                      List<DecisionDefinition> decisionDefinitions, String testName);
 
     /**
      * Retrieves the coverage for a test method.

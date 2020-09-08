@@ -17,12 +17,14 @@
 package io.flowcov.camunda.model;
 
 import io.flowcov.camunda.util.CoveredElementComparator;
+import org.camunda.bpm.engine.repository.DecisionDefinition;
 import org.camunda.bpm.engine.repository.ProcessDefinition;
 import org.camunda.bpm.model.bpmn.instance.FlowNode;
 import org.camunda.bpm.model.bpmn.instance.SequenceFlow;
 import org.junit.Assert;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Test class coverage model. The class coverage is an aggregation of all test method coverages.
@@ -40,7 +42,7 @@ public class ClassCoverage implements AggregatedCoverage {
      * @param testName
      * @param coveredElement
      */
-    public void addCoveredElement(String testName, CoveredElement coveredElement) {
+    public void addCoveredElement(final String testName, final CoveredElement coveredElement) {
         testNameToMethodCoverage.get(testName).addCoveredElement(coveredElement);
     }
 
@@ -50,8 +52,12 @@ public class ClassCoverage implements AggregatedCoverage {
      * @param currentTestMethodName
      * @param coveredElement
      */
-    public void endCoveredElement(String currentTestMethodName, CoveredElement coveredElement) {
+    public void endCoveredElement(final String currentTestMethodName, final CoveredElement coveredElement) {
         testNameToMethodCoverage.get(currentTestMethodName).endCoveredElement(coveredElement);
+    }
+
+    public void addCoveredDmnRules(final String currentTestMethodName, final List<CoveredDmnRule> coveredDmnRules) {
+        testNameToMethodCoverage.get(currentTestMethodName).addCoveredDmnRules(coveredDmnRules);
     }
 
     /**
@@ -60,7 +66,7 @@ public class ClassCoverage implements AggregatedCoverage {
      * @param testName The name of the test method.
      * @return
      */
-    public MethodCoverage getTestMethodCoverage(String testName) {
+    public MethodCoverage getTestMethodCoverage(final String testName) {
         return testNameToMethodCoverage.get(testName);
     }
 
@@ -80,7 +86,7 @@ public class ClassCoverage implements AggregatedCoverage {
      * @param testName
      * @param testCoverage
      */
-    public void addTestMethodCoverage(String testName, MethodCoverage testCoverage) {
+    public void addTestMethodCoverage(final String testName, final MethodCoverage testCoverage) {
         testNameToMethodCoverage.put(testName, testCoverage);
     }
 
@@ -91,16 +97,17 @@ public class ClassCoverage implements AggregatedCoverage {
      *
      * @return The coverage percentage.
      */
+    @Override
     public double getCoveragePercentage() {
 
         // All deployments must be the same, so we take the first one
-        final MethodCoverage anyDeployment = getAnyMethodCoverage();
+        final MethodCoverage anyDeployment = this.getAnyMethodCoverage();
 
         final Set<FlowNode> definitionsFlowNodes = anyDeployment.getProcessDefinitionsFlowNodes();
         final Set<SequenceFlow> definitionsSeqenceFlows = anyDeployment.getProcessDefinitionsSequenceFlows();
 
-        final Set<CoveredFlowNode> coveredFlowNodes = getCoveredFlowNodes();
-        final Set<CoveredSequenceFlow> coveredSequenceFlows = getCoveredSequenceFlows();
+        final Set<CoveredFlowNode> coveredFlowNodes = this.getCoveredFlowNodes();
+        final Set<CoveredSequenceFlow> coveredSequenceFlows = this.getCoveredSequenceFlows();
 
         final double bpmnElementsCount = definitionsFlowNodes.size() + definitionsSeqenceFlows.size();
         final double coveredElementsCount = coveredFlowNodes.size() + coveredSequenceFlows.size();
@@ -117,15 +124,15 @@ public class ClassCoverage implements AggregatedCoverage {
      * @return The coverage percentage.
      */
     @Override
-    public double getCoveragePercentage(String processDefinitionKey) {
+    public double getCoveragePercentage(final String processDefinitionKey) {
         // All deployments must be the same, so we take the first one
-        final MethodCoverage anyDeployment = getAnyMethodCoverage();
+        final MethodCoverage anyDeployment = this.getAnyMethodCoverage();
 
         final Set<FlowNode> definitionsFlowNodes = anyDeployment.getProcessDefinitionsFlowNodes(processDefinitionKey);
         final Set<SequenceFlow> definitionsSeqenceFlows = anyDeployment.getProcessDefinitionsSequenceFlows(processDefinitionKey);
 
-        final Set<CoveredFlowNode> coveredFlowNodes = getCoveredFlowNodes(processDefinitionKey);
-        final Set<CoveredSequenceFlow> coveredSequenceFlows = getCoveredSequenceFlows(processDefinitionKey);
+        final Set<CoveredFlowNode> coveredFlowNodes = this.getCoveredFlowNodes(processDefinitionKey);
+        final Set<CoveredSequenceFlow> coveredSequenceFlows = this.getCoveredSequenceFlows(processDefinitionKey);
 
         final double bpmnElementsCount = definitionsFlowNodes.size() + definitionsSeqenceFlows.size();
         final double coveredElementsCount = coveredFlowNodes.size() + coveredSequenceFlows.size();
@@ -135,7 +142,7 @@ public class ClassCoverage implements AggregatedCoverage {
 
     /**
      * Retrieves the covered flow nodes.
-     * Flow nodes with the same element ID but different process definition keys are retained. {@see CoveredElementComparator}
+     * Flow nodes with the same element ID but different process definition keys are retained.
      *
      * @return A set of covered flow nodes.
      */
@@ -143,7 +150,7 @@ public class ClassCoverage implements AggregatedCoverage {
 
         final Set<CoveredFlowNode> coveredFlowNodes = new TreeSet<CoveredFlowNode>(CoveredElementComparator.instance());
 
-        for (MethodCoverage methodCoverage : testNameToMethodCoverage.values()) {
+        for (final MethodCoverage methodCoverage : testNameToMethodCoverage.values()) {
 
             coveredFlowNodes.addAll(methodCoverage.getCoveredFlowNodes());
         }
@@ -152,11 +159,11 @@ public class ClassCoverage implements AggregatedCoverage {
     }
 
     @Override
-    public Set<CoveredFlowNode> getCoveredFlowNodes(String processDefinitionKey) {
+    public Set<CoveredFlowNode> getCoveredFlowNodes(final String processDefinitionKey) {
 
         final Set<CoveredFlowNode> coveredFlowNodes = new TreeSet<CoveredFlowNode>(CoveredElementComparator.instance());
 
-        for (MethodCoverage methodCoverage : testNameToMethodCoverage.values()) {
+        for (final MethodCoverage methodCoverage : testNameToMethodCoverage.values()) {
 
             coveredFlowNodes.addAll(methodCoverage.getCoveredFlowNodes(processDefinitionKey));
         }
@@ -167,10 +174,11 @@ public class ClassCoverage implements AggregatedCoverage {
     /**
      * Retrieves a set of covered flow node IDs for the given process definition key.
      */
-    public Set<String> getCoveredFlowNodeIds(String processDefinitionKey) {
+    @Override
+    public Set<String> getCoveredFlowNodeIds(final String processDefinitionKey) {
 
         final Set<String> coveredFlowNodeIds = new HashSet<String>();
-        for (MethodCoverage methodCoverage : testNameToMethodCoverage.values()) {
+        for (final MethodCoverage methodCoverage : testNameToMethodCoverage.values()) {
 
             coveredFlowNodeIds.addAll(methodCoverage.getCoveredFlowNodeIds(processDefinitionKey));
         }
@@ -180,7 +188,7 @@ public class ClassCoverage implements AggregatedCoverage {
 
     /**
      * Retrieves the covered sequence flows.
-     * Sequence flows with the same element ID but different process definition keys are retained. {@see CoveredElementComparator}
+     * Sequence flows with the same element ID but different process definition keys are retained.
      *
      * @return A set of covered flow nodes.
      */
@@ -188,7 +196,7 @@ public class ClassCoverage implements AggregatedCoverage {
 
         final Set<CoveredSequenceFlow> coveredSequenceFlows = new TreeSet<CoveredSequenceFlow>(CoveredElementComparator.instance());
 
-        for (MethodCoverage deploymentCoverage : testNameToMethodCoverage.values()) {
+        for (final MethodCoverage deploymentCoverage : testNameToMethodCoverage.values()) {
 
             coveredSequenceFlows.addAll(deploymentCoverage.getCoveredSequenceFlows());
 
@@ -201,15 +209,24 @@ public class ClassCoverage implements AggregatedCoverage {
      * Retrieves a set of covered sequence flow IDs for the given process
      * definition key.
      */
-    public Set<String> getCoveredSequenceFlowIds(String processDefinitionKey) {
+    @Override
+    public Set<String> getCoveredSequenceFlowIds(final String processDefinitionKey) {
 
         final Set<String> coveredSequenceFlowIds = new HashSet<String>();
-        for (MethodCoverage methodCoverage : testNameToMethodCoverage.values()) {
+        for (final MethodCoverage methodCoverage : testNameToMethodCoverage.values()) {
 
             coveredSequenceFlowIds.addAll(methodCoverage.getCoveredSequenceFlowIds(processDefinitionKey));
         }
 
         return coveredSequenceFlowIds;
+    }
+
+    @Override
+    public Set<CoveredDmnRule> getCoveredDecisionRules(final String decisionKey) {
+        return testNameToMethodCoverage.values().stream()
+                .map(obj -> obj.getCoveredDecisionRules(decisionKey))
+                .flatMap(Collection::stream)
+                .collect(Collectors.toSet());
     }
 
     /**
@@ -218,10 +235,11 @@ public class ClassCoverage implements AggregatedCoverage {
      *
      * @param processDefinitionKey
      */
-    public Set<CoveredSequenceFlow> getCoveredSequenceFlows(String processDefinitionKey) {
+    @Override
+    public Set<CoveredSequenceFlow> getCoveredSequenceFlows(final String processDefinitionKey) {
 
         final Set<CoveredSequenceFlow> coveredSequenceFlows = new TreeSet<CoveredSequenceFlow>(CoveredElementComparator.instance());
-        for (MethodCoverage methodCoverage : testNameToMethodCoverage.values()) {
+        for (final MethodCoverage methodCoverage : testNameToMethodCoverage.values()) {
 
             coveredSequenceFlows.addAll(methodCoverage.getCoveredSequenceFlows(processDefinitionKey));
         }
@@ -234,8 +252,19 @@ public class ClassCoverage implements AggregatedCoverage {
      * Since there are multiple deployments (one for each test method) the first
      * set of process definitions found is return.
      */
+    @Override
     public Set<ProcessDefinition> getProcessDefinitions() {
-        return getAnyMethodCoverage().getProcessDefinitions();
+        return this.getAnyMethodCoverage().getProcessDefinitions();
+    }
+
+    /**
+     * Retrieves the process definitions of the coverage test.
+     * Since there are multiple deployments (one for each test method) the first
+     * set of process definitions found is return.
+     */
+    @Override
+    public Set<DecisionDefinition> getDecisionDefinitions() {
+        return this.getAnyMethodCoverage().getDecisionDefinitions();
     }
 
     /**
@@ -256,9 +285,9 @@ public class ClassCoverage implements AggregatedCoverage {
     public void assertAllDeploymentsEqual() {
 
         Set<ProcessDefinition> processDefinitions = null;
-        for (MethodCoverage methodCoverage : testNameToMethodCoverage.values()) {
+        for (final MethodCoverage methodCoverage : testNameToMethodCoverage.values()) {
 
-            Set<ProcessDefinition> deploymentProcessDefinitions = methodCoverage.getProcessDefinitions();
+            final Set<ProcessDefinition> deploymentProcessDefinitions = methodCoverage.getProcessDefinitions();
 
             if (processDefinitions == null) {
                 processDefinitions = deploymentProcessDefinitions;

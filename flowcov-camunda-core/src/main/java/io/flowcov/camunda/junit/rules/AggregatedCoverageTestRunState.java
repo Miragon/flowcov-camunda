@@ -18,6 +18,7 @@ package io.flowcov.camunda.junit.rules;
 
 import io.flowcov.camunda.model.*;
 import org.camunda.bpm.engine.ProcessEngine;
+import org.camunda.bpm.engine.repository.DecisionDefinition;
 import org.camunda.bpm.engine.repository.ProcessDefinition;
 
 import java.util.ArrayList;
@@ -29,8 +30,8 @@ public class AggregatedCoverageTestRunState implements CoverageTestRunState {
 
     private List<ClassCoverage> classCoverages = new ArrayList<ClassCoverage>();
 
-    public void switchToNewState(CoverageTestRunState newState) {
-        finishState();
+    public void switchToNewState(final CoverageTestRunState newState) {
+        this.finishState();
         currentCoverageTestRunState = newState;
     }
 
@@ -42,27 +43,32 @@ public class AggregatedCoverageTestRunState implements CoverageTestRunState {
     }
 
     public AggregatedCoverage getAggregatedCoverage() {
-        finishState();
+        this.finishState();
         return new AggregatedClassCoverage(classCoverages);
     }
 
     @Override
-    public void addCoveredElement(CoveredElement coveredElement) {
+    public void addCoveredElement(final CoveredElement coveredElement) {
         currentCoverageTestRunState.addCoveredElement(coveredElement);
     }
 
     @Override
-    public void endCoveredElement(CoveredElement coveredElement) {
+    public void endCoveredElement(final CoveredElement coveredElement) {
         currentCoverageTestRunState.endCoveredElement(coveredElement);
     }
 
     @Override
-    public void initializeTestMethodCoverage(ProcessEngine processEngine, String deploymentId, List<ProcessDefinition> processDefinitions, String testName) {
-        currentCoverageTestRunState.initializeTestMethodCoverage(processEngine, deploymentId, processDefinitions, testName);
+    public void addCoveredRules(final List<CoveredDmnRule> coveredDmnRule) {
+        currentCoverageTestRunState.addCoveredRules(coveredDmnRule);
     }
 
     @Override
-    public MethodCoverage getTestMethodCoverage(String testName) {
+    public void initializeTestMethodCoverage(final ProcessEngine processEngine, final String deploymentId, final List<ProcessDefinition> processDefinitions, final List<DecisionDefinition> decisionDefinitions, final String testName) {
+        currentCoverageTestRunState.initializeTestMethodCoverage(processEngine, deploymentId, processDefinitions, decisionDefinitions, testName);
+    }
+
+    @Override
+    public MethodCoverage getTestMethodCoverage(final String testName) {
         return currentCoverageTestRunState.getTestMethodCoverage(testName);
     }
 
@@ -82,7 +88,7 @@ public class AggregatedCoverageTestRunState implements CoverageTestRunState {
     }
 
     @Override
-    public void setCurrentTestMethodName(String currentTestName) {
+    public void setCurrentTestMethodName(final String currentTestName) {
         currentCoverageTestRunState.setCurrentTestMethodName(currentTestName);
     }
 
@@ -92,12 +98,12 @@ public class AggregatedCoverageTestRunState implements CoverageTestRunState {
     }
 
     @Override
-    public void setTestClassName(String className) {
+    public void setTestClassName(final String className) {
         currentCoverageTestRunState.setTestClassName(className);
     }
 
     @Override
-    public void setExcludedProcessDefinitionKeys(List<String> excludedProcessDefinitionKeys) {
+    public void setExcludedProcessDefinitionKeys(final List<String> excludedProcessDefinitionKeys) {
         currentCoverageTestRunState.setExcludedProcessDefinitionKeys(excludedProcessDefinitionKeys);
     }
 }

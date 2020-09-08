@@ -14,31 +14,24 @@
  *  limitations under the License.
  */
 
-package io.flowcov.camunda.api;
+package io.flowcov.camunda.api.dmn;
 
-import io.flowcov.camunda.api.bpmn.BpmnModel;
-import io.flowcov.camunda.api.dmn.DmnModel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 
-/**
- * Build Class that is send to FlowCov.
- */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Build {
+public class DmnTestMethod {
+
+    private String name;
 
     @Builder.Default
-    private List<BpmnModel> bpmnModels = new ArrayList<>();
-
-    @Builder.Default
-    private List<DmnModel> dmnModels = new ArrayList<>();
+    private Collection<Rule> rules = new ArrayList<>();
 }
-

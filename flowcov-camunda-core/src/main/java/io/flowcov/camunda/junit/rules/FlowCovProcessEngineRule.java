@@ -26,6 +26,7 @@ import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.impl.bpmn.parser.BpmnParseListener;
 import org.camunda.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl;
 import org.camunda.bpm.engine.impl.event.EventHandler;
+import org.camunda.bpm.engine.repository.DecisionDefinition;
 import org.camunda.bpm.engine.repository.ProcessDefinition;
 import org.camunda.bpm.engine.test.ProcessEngineRule;
 import org.hamcrest.Matcher;
@@ -38,6 +39,7 @@ import java.lang.reflect.Field;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  * Rule handling the flowcov test coverage
@@ -91,7 +93,7 @@ public class FlowCovProcessEngineRule extends ProcessEngineRule {
         super();
     }
 
-    FlowCovProcessEngineRule(ProcessEngine processEngine) {
+    FlowCovProcessEngineRule(final ProcessEngine processEngine) {
         super(processEngine);
     }
 
@@ -101,7 +103,7 @@ public class FlowCovProcessEngineRule extends ProcessEngineRule {
      * @param testMethodName
      * @param matcher
      */
-    public void addTestMethodCoverageAssertionMatcher(String testMethodName, Matcher<Double> matcher) {
+    public void addTestMethodCoverageAssertionMatcher(final String testMethodName, final Matcher<Double> matcher) {
 
         // JDK7 ifAbsent
         Collection<Matcher<Double>> matchers = testMethodNameToCoverageMatchers.get(testMethodName);
@@ -119,35 +121,35 @@ public class FlowCovProcessEngineRule extends ProcessEngineRule {
      *
      * @param matcher
      */
-    public void addClassCoverageAssertionMatcher(MinimalCoverageMatcher matcher) {
+    public void addClassCoverageAssertionMatcher(final MinimalCoverageMatcher matcher) {
         classCoverageAssertionMatchers.add(matcher);
     }
 
-    public void setExcludedProcessDefinitionKeys(List<String> excludedProcessDefinitionKeys) {
+    public void setExcludedProcessDefinitionKeys(final List<String> excludedProcessDefinitionKeys) {
         this.excludedProcessDefinitionKeys = excludedProcessDefinitionKeys;
     }
 
     @Override
-    public void starting(Description description) {
+    public void starting(final Description description) {
 
-        validateRuleAnnotations(description);
+        this.validateRuleAnnotations(description);
 
         if (processEngine == null) {
             super.initializeProcessEngine();
         }
 
-        initializeRunState(description);
+        this.initializeRunState(description);
 
         super.starting(description);
 
-        initializeMethodCoverage(description);
+        this.initializeMethodCoverage(description);
     }
 
     @Override
-    public void finished(Description description) {
+    public void finished(final Description description) {
 
         if (handleClassCoverage) {
-            handleClassCoverage(description);
+            this.handleClassCoverage(description);
         }
 
         // run derived finalization only of not used as a class rule
@@ -163,7 +165,7 @@ public class FlowCovProcessEngineRule extends ProcessEngineRule {
      *
      * @param description
      */
-    private void validateRuleAnnotations(Description description) {
+    private void validateRuleAnnotations(final Description description) {
 
         // If the first run is a @ClassRule run, check if @Rule is annotated
         if (firstRun && !description.isTest()) {
@@ -175,10 +177,10 @@ public class FlowCovProcessEngineRule extends ProcessEngineRule {
              */
 
             int numberOfCoverageRules = 0;
-            for (Field field : description.getTestClass().getFields()) {
+            for (final Field field : description.getTestClass().getFields()) {
 
                 final Class<?> fieldType = field.getType();
-                if (getClass().isAssignableFrom(fieldType)) {
+                if (this.getClass().isAssignableFrom(fieldType)) {
 
                     ++numberOfCoverageRules;
 
@@ -186,7 +188,7 @@ public class FlowCovProcessEngineRule extends ProcessEngineRule {
                     final boolean isRule = field.isAnnotationPresent(Rule.class);
                     if (isClassRule && !isRule) {
 
-                        throw new RuntimeException(getClass().getCanonicalName()
+                        throw new RuntimeException(this.getClass().getCanonicalName()
                                 + " can only be used as a @ClassRule if it is also a @Rule!");
                     }
                 }
@@ -204,24 +206,33 @@ public class FlowCovProcessEngineRule extends ProcessEngineRule {
      *
      * @param description
      */
-    private void initializeMethodCoverage(Description description) {
+    private void initializeMethodCoverage(final Description description) {
 
         // Not a @ClassRule run and deployments present
         if (deploymentId != null) {
 
-            final List<ProcessDefinition> deployedProcessDefinitions = processEngine.getRepositoryService().createProcessDefinitionQuery().deploymentId(
-                    deploymentId).list();
+            final List<ProcessDefinition> deployedProcessDefinitions = processEngine.getRepositoryService()
+                    .createProcessDefinitionQuery()
+                    .deploymentId(deploymentId)
+                    .list();
 
-            final List<ProcessDefinition> relevantProcessDefinitions = new ArrayList<ProcessDefinition>();
-            for (ProcessDefinition definition : deployedProcessDefinitions) {
-                if (!isExcluded(definition)) {
-                    relevantProcessDefinitions.add(definition);
-                }
-            }
+            final List<ProcessDefinition> relevantProcessDefinitions = deployedProcessDefinitions.stream()
+                    .filter(obj -> !this.isExcluded(obj))
+                    .collect(Collectors.toList());
 
-            coverageTestRunState.initializeTestMethodCoverage(processEngine,
+            final List<DecisionDefinition> decisionDefinitions = processEngine.getRepositoryService()
+                    .createDecisionDefinitionQuery()
+                    .deploymentId(deploymentId)
+                    .list();
+
+
+            //Hier auch nach DMN suchen
+
+            coverageTestRunState.initializeTestMethodCoverage(
+                    processEngine,
                     deploymentId,
                     relevantProcessDefinitions,
+                    decisionDefinitions,
                     description.getMethodName());
 
         }
@@ -239,7 +250,7 @@ public class FlowCovProcessEngineRule extends ProcessEngineRule {
         // @Rule run
         if (firstRun) {
             coverageTestRunState = coverageTestRunStateFactory.create(description.getClassName(), excludedProcessDefinitionKeys);
-            initializeListenerRunState();
+            this.initializeListenerRunState();
             firstRun = false;
         }
 
@@ -263,7 +274,7 @@ public class FlowCovProcessEngineRule extends ProcessEngineRule {
 
         final List<BpmnParseListener> bpmnParseListeners = processEngineConfiguration.getCustomPostBPMNParseListeners();
 
-        for (BpmnParseListener parseListener : bpmnParseListeners) {
+        for (final BpmnParseListener parseListener : bpmnParseListeners) {
 
             if (parseListener instanceof PathCoverageParseListener) {
 
@@ -293,7 +304,7 @@ public class FlowCovProcessEngineRule extends ProcessEngineRule {
      *
      * @param description
      */
-    private void handleClassCoverage(Description description) {
+    private void handleClassCoverage(final Description description) {
 
         // If the rule is a class rule get the class coverage
         //if (!description.isTest()) {
@@ -310,19 +321,19 @@ public class FlowCovProcessEngineRule extends ProcessEngineRule {
         logger.info(
                 coverageTestRunState.getTestClassName() + " test class coverage is: " + classCoveragePercentage);
 
-        logCoverageDetail(classCoverage);
+        this.logCoverageDetail(classCoverage);
 
         // Create graphical report
         CoverageReportUtil.createClassReport(processEngine, coverageTestRunState);
 
-        assertCoverage(classCoveragePercentage, classCoverageAssertionMatchers);
+        this.assertCoverage(classCoveragePercentage, classCoverageAssertionMatchers);
 
         // }
     }
 
-    private void assertCoverage(double coverage, Collection<Matcher<Double>> matchers) {
+    private void assertCoverage(final double coverage, final Collection<Matcher<Double>> matchers) {
 
-        for (Matcher<Double> matcher : matchers) {
+        for (final Matcher<Double> matcher : matchers) {
 
             Assert.assertThat(coverage, matcher);
         }
@@ -334,15 +345,15 @@ public class FlowCovProcessEngineRule extends ProcessEngineRule {
      *
      * @param coverage
      */
-    private void logCoverageDetail(AggregatedCoverage coverage) {
+    private void logCoverageDetail(final AggregatedCoverage coverage) {
 
-        if (logger.isLoggable(Level.FINE) || isDetailedCoverageLogging()) {
+        if (logger.isLoggable(Level.FINE) || this.isDetailedCoverageLogging()) {
             logger.log(Level.INFO, coverage.toString());
         }
 
     }
 
-    private boolean isExcluded(ProcessDefinition processDefinition) {
+    private boolean isExcluded(final ProcessDefinition processDefinition) {
         if (excludedProcessDefinitionKeys != null) {
             return excludedProcessDefinitionKeys.contains(processDefinition.getKey());
         }
@@ -353,20 +364,20 @@ public class FlowCovProcessEngineRule extends ProcessEngineRule {
         return detailedCoverageLogging;
     }
 
-    public void setDetailedCoverageLogging(boolean detailedCoverageLogging) {
+    public void setDetailedCoverageLogging(final boolean detailedCoverageLogging) {
         this.detailedCoverageLogging = detailedCoverageLogging;
     }
 
-    public void setHandleClassCoverage(boolean handleClassCoverage) {
+    public void setHandleClassCoverage(final boolean handleClassCoverage) {
         this.handleClassCoverage = handleClassCoverage;
     }
 
-    public void setCoverageTestRunStateFactory(CoverageTestRunStateFactory coverageTestRunStateFactory) {
+    public void setCoverageTestRunStateFactory(final CoverageTestRunStateFactory coverageTestRunStateFactory) {
         this.coverageTestRunStateFactory = coverageTestRunStateFactory;
     }
 
     @Override
-    public org.junit.runners.model.Statement apply(org.junit.runners.model.Statement base, Description description) {
+    public org.junit.runners.model.Statement apply(final org.junit.runners.model.Statement base, final Description description) {
         return super.apply(base, description);
 
     }
@@ -374,13 +385,13 @@ public class FlowCovProcessEngineRule extends ProcessEngineRule {
     ;
 
     @Override
-    protected void succeeded(Description description) {
+    protected void succeeded(final Description description) {
         super.succeeded(description);
         logger.info(description.getDisplayName() + " succeeded.");
     }
 
     @Override
-    protected void failed(Throwable e, Description description) {
+    protected void failed(final Throwable e, final Description description) {
         super.failed(e, description);
         logger.info(description.getDisplayName() + " failed.");
     }
