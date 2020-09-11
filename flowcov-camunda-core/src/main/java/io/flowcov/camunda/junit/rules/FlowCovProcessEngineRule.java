@@ -26,16 +26,14 @@ import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.impl.bpmn.parser.BpmnParseListener;
 import org.camunda.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl;
 import org.camunda.bpm.engine.impl.event.EventHandler;
-import org.camunda.bpm.engine.impl.test.TestHelper;
 import org.camunda.bpm.engine.repository.DecisionDefinition;
 import org.camunda.bpm.engine.repository.ProcessDefinition;
+import org.camunda.bpm.engine.test.ProcessEngineRule;
 import org.hamcrest.Matcher;
 import org.junit.Assert;
-import org.junit.Assume;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.runner.Description;
-import org.junit.runners.model.Statement;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -380,31 +378,11 @@ public class FlowCovProcessEngineRule extends ProcessEngineRule {
 
     @Override
     public org.junit.runners.model.Statement apply(final org.junit.runners.model.Statement base, final Description description) {
-
-        return FlowCovProcessEngineRule.super.apply(base, description);
-
-        if (this.processEngine == null) {
-            this.initializeProcessEngine();
-        }
-
-        this.initializeServices();
-        final boolean hasRequiredHistoryLevel = TestHelper.annotationRequiredHistoryLevelCheck(this.processEngine, description);
-        final boolean runsWithRequiredDatabase = TestHelper.annotationRequiredDatabaseCheck(this.processEngine, description);
-        return new Statement() {
-            @Override
-            public void evaluate() throws Throwable {
-                Assume.assumeTrue("ignored because the current history level is too low", hasRequiredHistoryLevel);
-                Assume.assumeTrue("ignored because the database doesn't match the required ones", runsWithRequiredDatabase);
-                FlowCovProcessEngineRule.super.apply(base, description).evaluate();
-            }
-        };
+        return super.apply(base, description);
 
     }
 
-    public void initialize(final ProcessEngine processEngine) {
-
-    }
-
+    ;
 
     @Override
     protected void succeeded(final Description description) {
