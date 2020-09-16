@@ -14,10 +14,21 @@
  *  limitations under the License.
  */
 
-package io.flowcov.camunda.junit.rules;
+package io.flowcov.camunda.junit;
 
-import java.util.List;
+import org.camunda.bpm.engine.impl.cfg.StandaloneInMemProcessEngineConfiguration;
 
-public interface CoverageTestRunStateFactory {
-    CoverageTestRunState create(String className, List<String> excludedProcessDefinitionKeys);
+/**
+ * Standalone in memory process engine configuration additionally configuring
+ * flow node, sequence flow and compensation listeners for process coverage
+ * testing.
+ */
+public class ProcessCoverageInMemProcessEngineConfiguration extends StandaloneInMemProcessEngineConfiguration {
+
+    @Override
+    protected void init() {
+        ProcessCoverageConfigurator.initializeProcessCoverageExtensions(this);
+        super.init();
+    }
+
 }

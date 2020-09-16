@@ -16,13 +16,11 @@
 
 package io.flowcov.camunda.model;
 
-import io.flowcov.camunda.util.CoveredElementComparator;
 import lombok.Getter;
+import lombok.ToString;
 import lombok.val;
 import org.camunda.bpm.engine.repository.DecisionDefinition;
 import org.camunda.bpm.engine.repository.ProcessDefinition;
-import org.camunda.bpm.model.bpmn.instance.FlowNode;
-import org.camunda.bpm.model.bpmn.instance.SequenceFlow;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -33,6 +31,7 @@ import java.util.stream.Collectors;
  * A test method annotated with @Deployment does an independent deployment of the listed
  * resources, hence this coverage is equivalent to a deployment coverage.
  */
+@ToString
 public class MethodCoverage implements AggregatedCoverage {
 
     /**
@@ -117,210 +116,42 @@ public class MethodCoverage implements AggregatedCoverage {
         decisionCoverage.addCoveredDmnRule(coveredDmnRules);
     }
 
-
-    /**
-     * Retrieves the coverage percentage for all process definitions deployed
-     * with the method.
-     */
-    @Override
-    public double getCoveragePercentage() {
-
-        // Aggregate element collections
-
-        final Set<CoveredFlowNode> deploymentCoveredFlowNodes = new HashSet<>();
-        final Set<FlowNode> deploymentDefinitionsFlowNodes = new HashSet<FlowNode>();
-
-        final Set<CoveredSequenceFlow> deploymentCoveredSequenceFlows = new HashSet<>();
-        final Set<SequenceFlow> deploymentDefinitionsSequenceFlows = new HashSet<SequenceFlow>();
-
-        // Collect defined and covered elements for all definitions in the method deployment
-        for (final ProcessCoverage processCoverage : processDefinitionKeyToProcessCoverage.values()) {
-
-            // Flow nodes
-
-            final Set<CoveredFlowNode> coveredFlowNodes = processCoverage.getCoveredFlowNodes();
-            deploymentCoveredFlowNodes.addAll(coveredFlowNodes);
-
-            final Collection<FlowNode> definitionFlowNodes = processCoverage.getDefinitionFlowNodes();
-            deploymentDefinitionsFlowNodes.addAll(definitionFlowNodes);
-
-            // Sequence flows
-
-            final Set<CoveredSequenceFlow> coveredSequenceFlows = processCoverage.getCoveredSequenceFlows();
-            deploymentCoveredSequenceFlows.addAll(coveredSequenceFlows);
-
-            final Collection<SequenceFlow> definitionSequenceFlows = processCoverage.getDefinitionSequenceFlows();
-            deploymentDefinitionsSequenceFlows.addAll(definitionSequenceFlows);
-
-        }
-
-        // Calculate coverage
-        final double coveragePercentage = this.getCoveragePercentage(
-                deploymentCoveredFlowNodes, deploymentDefinitionsFlowNodes,
-                deploymentCoveredSequenceFlows, deploymentDefinitionsSequenceFlows);
-
-        return coveragePercentage;
-    }
-
-    /**
-     * Retrieves the coverage percentage for the given process definition key
-     * with the method.
-     *
-     * @param processDefinitionKey
-     */
-    @Override
-    public double getCoveragePercentage(final String processDefinitionKey) {
-
-        final ProcessCoverage processCoverage = processDefinitionKeyToProcessCoverage.get(processDefinitionKey);
-
-        final Set<CoveredFlowNode> coveredFlowNodes = processCoverage.getCoveredFlowNodes();
-        final Set<FlowNode> definitionFlowNodes = processCoverage.getDefinitionFlowNodes();
-
-        final Set<CoveredSequenceFlow> coveredSequenceFlows = processCoverage.getCoveredSequenceFlows();
-        final Set<SequenceFlow> definitionSequenceFlows = processCoverage.getDefinitionSequenceFlows();
-
-        // Calculate coverage
-        final double coveragePercentage = this.getCoveragePercentage(
-                coveredFlowNodes, definitionFlowNodes,
-                coveredSequenceFlows, definitionSequenceFlows);
-
-        return coveragePercentage;
-    }
-
-    /**
-     * Calculates the process coverage percentage according to the passed defined and covered elements.
-     *
-     * @param coveredFlowNodes         Covered flow nodes possibly from multiple process definitions.
-     * @param definitionsFlowNodes     Flow nodes of this test methods deployed process definitions.
-     * @param coveredSequenceFlows     Covered sequence flows possibly from multiple process definitions.
-     * @param definitionsSequenceFlows Flow nodes of this test methods deployed process definitions,
-     * @return Coverage percentage of all process definitions combined.
-     */
-    private double getCoveragePercentage(final Set<CoveredFlowNode> coveredFlowNodes, final Set<FlowNode> definitionsFlowNodes,
-                                         final Set<CoveredSequenceFlow> coveredSequenceFlows, final Set<SequenceFlow> definitionsSequenceFlows) {
-
-        final int numberOfDefinedElements = definitionsFlowNodes.size() + definitionsSequenceFlows.size();
-        final int numberOfCoveredElemenets = coveredFlowNodes.size() + coveredSequenceFlows.size();
-
-        return (double) numberOfCoveredElemenets / (double) numberOfDefinedElements;
-
-    }
-
-    /**
-     * Retrieves the flow nodes of all the process definitions in the method deployment.
-     *
-     * @return
-     */
-    public Set<FlowNode> getProcessDefinitionsFlowNodes() {
-
-        final Set<FlowNode> flowNodes = new HashSet<FlowNode>();
-        for (final ProcessCoverage processCoverage : processDefinitionKeyToProcessCoverage.values()) {
-
-            final Set<FlowNode> definitionFlowNodes = processCoverage.getDefinitionFlowNodes();
-            flowNodes.addAll(definitionFlowNodes);
-
-        }
-
-        return flowNodes;
-    }
-
-    /**
-     * Retrieves the flow nodes for the process definition identified by the passed key in the method deployment.
-     *
-     * @param processDefinitionKey
-     * @return
-     */
-    public Set<FlowNode> getProcessDefinitionsFlowNodes(final String processDefinitionKey) {
-
-        final ProcessCoverage processCoverage = processDefinitionKeyToProcessCoverage.get(processDefinitionKey);
-        final Set<FlowNode> definitionFlowNodes = processCoverage.getDefinitionFlowNodes();
-
-        return definitionFlowNodes;
-    }
-
-    /**
-     * Retrieves the sequence flows of all the process definitions in the method deployment.
-     *
-     * @return
-     */
-    public Set<SequenceFlow> getProcessDefinitionsSequenceFlows() {
-
-        final Set<SequenceFlow> sequenceFlows = new HashSet<SequenceFlow>();
-        for (final ProcessCoverage processCoverage : processDefinitionKeyToProcessCoverage.values()) {
-
-            final Set<SequenceFlow> definitionSequenceFlows = processCoverage.getDefinitionSequenceFlows();
-            sequenceFlows.addAll(definitionSequenceFlows);
-
-        }
-
-        return sequenceFlows;
-    }
-
-    /**
-     * Retrieves the sequence flows for the process definition identified by the passed key in the method deployment.
-     *
-     * @param processDefinitionKey
-     * @return
-     */
-    public Set<SequenceFlow> getProcessDefinitionsSequenceFlows(final String processDefinitionKey) {
-
-        final ProcessCoverage processCoverage = processDefinitionKeyToProcessCoverage.get(processDefinitionKey);
-        final Set<SequenceFlow> sequenceFlows = processCoverage.getDefinitionSequenceFlows();
-
-        return sequenceFlows;
-    }
-
     /**
      * Retrieves a set of covered flow nodes of the process definitions deployed by this test method.
      *
      * @return
      */
-    public Set<CoveredFlowNode> getCoveredFlowNodes() {
-
-        final Set<CoveredFlowNode> flowNodes = new TreeSet<CoveredFlowNode>(CoveredElementComparator.instance());
-        for (final ProcessCoverage processCoverage : processDefinitionKeyToProcessCoverage.values()) {
-
-            final Set<CoveredFlowNode> definitionFlowNodes = processCoverage.getCoveredFlowNodes();
-            flowNodes.addAll(definitionFlowNodes);
-
-        }
-
-        return flowNodes;
+    public List<CoveredFlowNode> getCoveredFlowNodes() {
+        return processDefinitionKeyToProcessCoverage.values().stream()
+                .map(ProcessCoverage::getCoveredFlowNodes)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
     }
 
-    public Set<CoveredSequenceFlow> getCoveredSequenceFlows() {
-
-        final Set<CoveredSequenceFlow> sequenceFlows = new TreeSet<CoveredSequenceFlow>(CoveredElementComparator.instance());
-        for (final ProcessCoverage processCoverage : processDefinitionKeyToProcessCoverage.values()) {
-
-            final Set<CoveredSequenceFlow> definitionSequenceFlows = processCoverage.getCoveredSequenceFlows();
-            sequenceFlows.addAll(definitionSequenceFlows);
-
-        }
-
-        return sequenceFlows;
+    public List<CoveredSequenceFlow> getCoveredSequenceFlows() {
+        return processDefinitionKeyToProcessCoverage.values().stream()
+                .map(ProcessCoverage::getCoveredSequenceFlows)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
     }
 
+    public Integer getDecisionRuleCount(final String decisionKey) {
 
-    @Override
-    public Set<String> getCoveredFlowNodeIds(final String processDefinitionKey) {
+        final DecisionCoverage decisionCoverage = decisionKeyToDecisionCoverage.get(decisionKey);
+        return decisionCoverage.getDefinitionDecisionRules().size();
+    }
+
+    public Integer getProcessElementCount(final String processDefinitionKey) {
 
         final ProcessCoverage processCoverage = processDefinitionKeyToProcessCoverage.get(processDefinitionKey);
-        return processCoverage.getCoveredFlowNodeIds();
+        return processCoverage.getDefinitionFlowNodes().size() + processCoverage.getDefinitionSequenceFlows().size();
     }
 
     @Override
-    public Set<CoveredFlowNode> getCoveredFlowNodes(final String processDefinitionKey) {
+    public List<CoveredFlowNode> getCoveredFlowNodes(final String processDefinitionKey) {
 
         final ProcessCoverage processCoverage = processDefinitionKeyToProcessCoverage.get(processDefinitionKey);
         return processCoverage.getCoveredFlowNodes();
-    }
-
-    @Override
-    public Set<String> getCoveredSequenceFlowIds(final String processDefinitionKey) {
-
-        final ProcessCoverage processCoverage = processDefinitionKeyToProcessCoverage.get(processDefinitionKey);
-        return processCoverage.getCoveredSequenceFlowIds();
     }
 
     @Override
@@ -330,19 +161,13 @@ public class MethodCoverage implements AggregatedCoverage {
         return decisionCoverage.getCoveredDmnRules();
     }
 
-    public Integer getDecisionRuleCount(final String decisionKey) {
-
-        final DecisionCoverage decisionCoverage = decisionKeyToDecisionCoverage.get(decisionKey);
-        return decisionCoverage.getDefinitionDecisionRules().size();
-    }
 
     @Override
-    public Set<CoveredSequenceFlow> getCoveredSequenceFlows(final String processDefinitionKey) {
+    public List<CoveredSequenceFlow> getCoveredSequenceFlows(final String processDefinitionKey) {
 
         final ProcessCoverage processCoverage = processDefinitionKeyToProcessCoverage.get(processDefinitionKey);
         return processCoverage.getCoveredSequenceFlows();
     }
-
 
     @Override
     public Set<ProcessDefinition> getProcessDefinitions() {
@@ -385,25 +210,5 @@ public class MethodCoverage implements AggregatedCoverage {
         return decisionDefinitions;
     }
 
-    @Override
-    public String toString() {
-
-        /*
-         * String representation mainly used for junit output and debug.
-         */
-
-        final StringBuilder builder = new StringBuilder();
-        builder.append("Deployment ID: ");
-        builder.append(deploymentId);
-        builder.append("\nDeployment process definitions:\n");
-
-        // List of process coverage string representations
-        for (final ProcessCoverage processCoverage : processDefinitionKeyToProcessCoverage.values()) {
-            builder.append(processCoverage);
-            builder.append('\n');
-        }
-
-        return builder.toString();
-    }
 
 }

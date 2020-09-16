@@ -14,14 +14,14 @@
  *  limitations under the License.
  */
 
-package io.flowcov.camunda.junit.rules;
+package io.flowcov.camunda.junit;
 
 import io.flowcov.camunda.listeners.CompensationEventCoverageHandler;
-import io.flowcov.camunda.listeners.FlowNodeHistoryEventHandler;
-import io.flowcov.camunda.listeners.PathCoverageParseListener;
-import io.flowcov.camunda.model.AggregatedCoverage;
+import io.flowcov.camunda.listeners.CoverageHistoryEventHandler;
+import io.flowcov.camunda.listeners.ElementCoverageParseListener;
 import io.flowcov.camunda.model.ClassCoverage;
 import io.flowcov.camunda.util.CoverageReportUtil;
+import lombok.val;
 import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.impl.bpmn.parser.BpmnParseListener;
 import org.camunda.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl;
@@ -37,7 +37,6 @@ import org.junit.runner.Description;
 
 import java.lang.reflect.Field;
 import java.util.*;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -51,7 +50,7 @@ public class FlowCovProcessEngineRule extends ProcessEngineRule {
     /**
      * The state of the current run (class and current method).
      */
-    private CoverageTestRunState coverageTestRunState;
+    private FlowCovTestRunState coverageTestRunState;
 
     /**
      * Controls run state initialization.
@@ -60,19 +59,9 @@ public class FlowCovProcessEngineRule extends ProcessEngineRule {
     private boolean firstRun = true;
 
     /**
-     * Log class and test method coverages?
-     */
-    private boolean detailedCoverageLogging = false;
-
-    /**
-     * Is class coverage handling needed?
-     */
-    private boolean handleClassCoverage = true;
-
-    /**
      * coverageTestRunStateFactory. Can be changed for aggregated/suite coverage check
      */
-    private CoverageTestRunStateFactory coverageTestRunStateFactory = new DefaultCoverageTestRunStateFactory();
+    private FlowCovTestRunStateFactory coverageTestRunStateFactory = new FlowCovTestRunStateFactory();
 
     /**
      * Matchers to be asserted on the class coverage percentage.
@@ -116,15 +105,6 @@ public class FlowCovProcessEngineRule extends ProcessEngineRule {
 
     }
 
-    /**
-     * Adds an assertion for the class coverage percentage.
-     *
-     * @param matcher
-     */
-    public void addClassCoverageAssertionMatcher(final MinimalCoverageMatcher matcher) {
-        classCoverageAssertionMatchers.add(matcher);
-    }
-
     public void setExcludedProcessDefinitionKeys(final List<String> excludedProcessDefinitionKeys) {
         this.excludedProcessDefinitionKeys = excludedProcessDefinitionKeys;
     }
@@ -148,9 +128,7 @@ public class FlowCovProcessEngineRule extends ProcessEngineRule {
     @Override
     public void finished(final Description description) {
 
-        if (handleClassCoverage) {
-            this.handleClassCoverage(description);
-        }
+        this.handleClassCoverage(description);
 
         // run derived finalization only of not used as a class rule
         if (identityService != null) {
@@ -258,16 +236,15 @@ public class FlowCovProcessEngineRule extends ProcessEngineRule {
     }
 
     /**
-     * Sets the test run state for the coverage listeners. logging.
-     * {@see ProcessCoverageInMemProcessEngineConfiguration}
+     * Sets the test run state for the coverage listeners.
      */
     private void initializeListenerRunState() {
 
-        final ProcessEngineConfigurationImpl processEngineConfiguration = (ProcessEngineConfigurationImpl) processEngine.getProcessEngineConfiguration();
+        val processEngineConfiguration = (ProcessEngineConfigurationImpl) processEngine.getProcessEngineConfiguration();
 
         // Configure activities listener
 
-        final FlowNodeHistoryEventHandler historyEventHandler = (FlowNodeHistoryEventHandler) processEngineConfiguration.getHistoryEventHandler();
+        val historyEventHandler = (CoverageHistoryEventHandler) processEngineConfiguration.getHistoryEventHandler();
         historyEventHandler.setCoverageTestRunState(coverageTestRunState);
 
         // Configure sequence flow listener
@@ -275,10 +252,8 @@ public class FlowCovProcessEngineRule extends ProcessEngineRule {
         final List<BpmnParseListener> bpmnParseListeners = processEngineConfiguration.getCustomPostBPMNParseListeners();
 
         for (final BpmnParseListener parseListener : bpmnParseListeners) {
-
-            if (parseListener instanceof PathCoverageParseListener) {
-
-                final PathCoverageParseListener listener = (PathCoverageParseListener) parseListener;
+            if (parseListener instanceof ElementCoverageParseListener) {
+                val listener = (ElementCoverageParseListener) parseListener;
                 listener.setCoverageTestRunState(coverageTestRunState);
             }
         }
@@ -297,13 +272,7 @@ public class FlowCovProcessEngineRule extends ProcessEngineRule {
 
     }
 
-    /**
-     * If the rule is a @ClassRule log and assert the coverage and create a
-     * graphical report. For the class coverage to work all the test method
-     * deployments have to be equal.
-     *
-     * @param description
-     */
+
     private void handleClassCoverage(final Description description) {
 
         // If the rule is a class rule get the class coverage
@@ -315,20 +284,9 @@ public class FlowCovProcessEngineRule extends ProcessEngineRule {
         // every test method
         classCoverage.assertAllDeploymentsEqual();
 
-        final double classCoveragePercentage = classCoverage.getCoveragePercentage();
-
-        // Log coverage percentage
-        logger.info(
-                coverageTestRunState.getTestClassName() + " test class coverage is: " + classCoveragePercentage);
-
-        this.logCoverageDetail(classCoverage);
-
         // Create graphical report
         CoverageReportUtil.createClassReport(processEngine, coverageTestRunState);
 
-        this.assertCoverage(classCoveragePercentage, classCoverageAssertionMatchers);
-
-        // }
     }
 
     private void assertCoverage(final double coverage, final Collection<Matcher<Double>> matchers) {
@@ -340,19 +298,6 @@ public class FlowCovProcessEngineRule extends ProcessEngineRule {
 
     }
 
-    /**
-     * Logs the string representation of the passed coverage object.
-     *
-     * @param coverage
-     */
-    private void logCoverageDetail(final AggregatedCoverage coverage) {
-
-        if (logger.isLoggable(Level.FINE) || this.isDetailedCoverageLogging()) {
-            logger.log(Level.INFO, coverage.toString());
-        }
-
-    }
-
     private boolean isExcluded(final ProcessDefinition processDefinition) {
         if (excludedProcessDefinitionKeys != null) {
             return excludedProcessDefinitionKeys.contains(processDefinition.getKey());
@@ -360,19 +305,7 @@ public class FlowCovProcessEngineRule extends ProcessEngineRule {
         return false;
     }
 
-    public boolean isDetailedCoverageLogging() {
-        return detailedCoverageLogging;
-    }
-
-    public void setDetailedCoverageLogging(final boolean detailedCoverageLogging) {
-        this.detailedCoverageLogging = detailedCoverageLogging;
-    }
-
-    public void setHandleClassCoverage(final boolean handleClassCoverage) {
-        this.handleClassCoverage = handleClassCoverage;
-    }
-
-    public void setCoverageTestRunStateFactory(final CoverageTestRunStateFactory coverageTestRunStateFactory) {
+    public void setCoverageTestRunStateFactory(final FlowCovTestRunStateFactory coverageTestRunStateFactory) {
         this.coverageTestRunStateFactory = coverageTestRunStateFactory;
     }
 

@@ -14,14 +14,14 @@
  *  limitations under the License.
  */
 
-package io.flowcov.camunda.junit.rules;
+package io.flowcov.camunda.junit;
 
 import java.util.List;
 
-public class DefaultCoverageTestRunStateFactory implements CoverageTestRunStateFactory {
-    @Override
-    public CoverageTestRunState create(String className, List<String> excludedProcessDefinitionKeys) {
-        CoverageTestRunState coverageTestRunState = new DefaultCoverageTestRunState();
+public class FlowCovTestRunStateFactory {
+
+    public FlowCovTestRunState create(final String className, final List<String> excludedProcessDefinitionKeys) {
+        final FlowCovTestRunState coverageTestRunState = new FlowCovTestRunState();
         coverageTestRunState.setTestClassName(className);
         coverageTestRunState.setExcludedProcessDefinitionKeys(excludedProcessDefinitionKeys);
         return coverageTestRunState;

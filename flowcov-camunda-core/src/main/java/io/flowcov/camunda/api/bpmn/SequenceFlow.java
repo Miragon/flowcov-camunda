@@ -14,21 +14,21 @@
  *  limitations under the License.
  */
 
-package io.flowcov.camunda.junit.rules;
+package io.flowcov.camunda.api.bpmn;
 
-import org.camunda.bpm.engine.impl.cfg.StandaloneInMemProcessEngineConfiguration;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-/**
- * Standalone in memory process engine configuration additionally configuring
- * flow node, sequence flow and compensation listeners for process coverage
- * testing.
- */
-public class ProcessCoverageInMemProcessEngineConfiguration extends StandaloneInMemProcessEngineConfiguration {
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class SequenceFlow {
 
-    @Override
-    protected void init() {
-        ProcessCoverageConfigurator.initializeProcessCoverageExtensions(this);
-        super.init();
-    }
+    private String key;
+    private String instanceId;
+    private long executionStartCounter;
 
 }

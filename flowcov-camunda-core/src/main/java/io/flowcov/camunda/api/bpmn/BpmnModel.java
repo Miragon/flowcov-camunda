@@ -34,6 +34,7 @@ public class BpmnModel {
     private String name;
     private String version;
     private String processDefinitionKey;
+    private int totalNodeCount;
     private int hash;
 
     @Builder.Default

@@ -31,11 +31,10 @@ import java.util.Collection;
 public class BpmnTestMethod {
 
     private String name;
-    private double coverage;
 
     @Builder.Default
     private Collection<FlowNode> flowNodes = new ArrayList<>();
 
     @Builder.Default
-    private Collection<String> sequenceFlowIds = new ArrayList<>();
+    private Collection<SequenceFlow> sequenceFlows = new ArrayList<>();
 }

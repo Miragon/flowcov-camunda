@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package io.flowcov.camunda.junit.rules;
+package io.flowcov.camunda.junit;
 
 import io.flowcov.camunda.model.*;
 import org.camunda.bpm.engine.ProcessEngine;
@@ -28,9 +28,9 @@ import java.util.logging.Logger;
 /**
  * State tracking the current class and method coverage run.
  */
-public class DefaultCoverageTestRunState implements CoverageTestRunState {
+public class FlowCovTestRunState {
 
-    private Logger log = Logger.getLogger(DefaultCoverageTestRunState.class.getCanonicalName());
+    private Logger log = Logger.getLogger(FlowCovTestRunState.class.getCanonicalName());
 
     /**
      * The actual class coverage object.
@@ -41,6 +41,11 @@ public class DefaultCoverageTestRunState implements CoverageTestRunState {
      * The test class name.
      */
     private String testClassName;
+
+    /**
+     * The counter of processed elements.
+     */
+    private Integer executionCounter = 0;
 
     /**
      * The name of the currently executing test method.
@@ -57,8 +62,10 @@ public class DefaultCoverageTestRunState implements CoverageTestRunState {
      *
      * @param coveredElement
      */
-    @Override
     public void addCoveredElement(/* @NotNull */ final CoveredElement coveredElement) {
+
+        executionCounter++;
+        coveredElement.setExecutionStartCounter(executionCounter);
 
         if (!this.isExcluded(coveredElement)) {
             if (log.isLoggable(Level.FINE)) {
@@ -75,20 +82,23 @@ public class DefaultCoverageTestRunState implements CoverageTestRunState {
      *
      * @param coveredElement
      */
-    @Override
     public void endCoveredElement(final CoveredElement coveredElement) {
+        executionCounter++;
+
+        if (coveredElement instanceof CoveredFlowNode) {
+            final CoveredFlowNode endedFlowNode = (CoveredFlowNode) coveredElement;
+            endedFlowNode.setExecutionEndCoutner(executionCounter);
+        }
 
         if (!this.isExcluded(coveredElement)) {
             if (log.isLoggable(Level.FINE)) {
                 log.info("endCoveredElement(" + coveredElement + ")");
             }
-
             classCoverage.endCoveredElement(currentTestMethodName, coveredElement);
         }
 
     }
 
-    @Override
     public void addCoveredRules(final List<CoveredDmnRule> coveredDmnRule) {
         classCoverage.addCoveredDmnRules(currentTestMethodName, coveredDmnRule);
     }
@@ -102,7 +112,6 @@ public class DefaultCoverageTestRunState implements CoverageTestRunState {
      * @param processDefinitions The process definitions of the test method deployment.
      * @param testName           The name of the test method.
      */
-    @Override
     public void initializeTestMethodCoverage(final ProcessEngine processEngine, final String deploymentId,
                                              final List<ProcessDefinition> processDefinitions,
                                              final List<DecisionDefinition> decisionDefinitions, final String testName) {
@@ -127,7 +136,6 @@ public class DefaultCoverageTestRunState implements CoverageTestRunState {
      * @param testName
      * @return
      */
-    @Override
     public MethodCoverage getTestMethodCoverage(final String testName) {
         return classCoverage.getTestMethodCoverage(testName);
     }
@@ -137,7 +145,6 @@ public class DefaultCoverageTestRunState implements CoverageTestRunState {
      *
      * @return
      */
-    @Override
     public MethodCoverage getCurrentTestMethodCoverage() {
         return classCoverage.getTestMethodCoverage(currentTestMethodName);
     }
@@ -147,9 +154,9 @@ public class DefaultCoverageTestRunState implements CoverageTestRunState {
      *
      * @return
      */
-    @Override
     public ClassCoverage getClassCoverage() {
         return classCoverage;
+
     }
 
     /**
@@ -157,7 +164,6 @@ public class DefaultCoverageTestRunState implements CoverageTestRunState {
      *
      * @return
      */
-    @Override
     public String getCurrentTestMethodName() {
         return currentTestMethodName;
     }
@@ -167,22 +173,18 @@ public class DefaultCoverageTestRunState implements CoverageTestRunState {
      *
      * @param currentTestName
      */
-    @Override
     public void setCurrentTestMethodName(final String currentTestName) {
         this.currentTestMethodName = currentTestName;
     }
 
-    @Override
     public String getTestClassName() {
         return testClassName;
     }
 
-    @Override
     public void setTestClassName(final String className) {
         this.testClassName = className;
     }
 
-    @Override
     public void setExcludedProcessDefinitionKeys(final List<String> excludedProcessDefinitionKeys) {
         this.excludedProcessDefinitionKeys = excludedProcessDefinitionKeys;
     }
