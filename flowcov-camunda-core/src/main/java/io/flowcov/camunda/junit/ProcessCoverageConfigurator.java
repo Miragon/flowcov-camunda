@@ -14,14 +14,13 @@
  *  limitations under the License.
  */
 
-package io.flowcov.camunda.junit.rules;
+package io.flowcov.camunda.junit;
 
 import io.flowcov.camunda.listeners.CompensationEventCoverageHandler;
-import io.flowcov.camunda.listeners.FlowNodeHistoryEventHandler;
-import io.flowcov.camunda.listeners.PathCoverageParseListener;
+import io.flowcov.camunda.listeners.CoverageHistoryEventHandler;
+import io.flowcov.camunda.listeners.ElementCoverageParseListener;
 import org.camunda.bpm.engine.impl.bpmn.parser.BpmnParseListener;
 import org.camunda.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl;
-import org.camunda.bpm.engine.impl.event.EventHandler;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -32,32 +31,33 @@ import java.util.List;
 public class ProcessCoverageConfigurator {
 
     public static void initializeProcessCoverageExtensions(final ProcessEngineConfigurationImpl configuration) {
-        initializeFlowNodeHandler(configuration);
-        initializePathCoverageParseListener(configuration);
+        initializeCoverageHistoryHandler(configuration);
+        initializeElementCoverageParseListener(configuration);
         initializeCompensationEventHandler(configuration);
     }
 
-    private static void initializePathCoverageParseListener(final ProcessEngineConfigurationImpl configuration) {
+    private static void initializeElementCoverageParseListener(final ProcessEngineConfigurationImpl configuration) {
         List<BpmnParseListener> bpmnParseListeners = configuration.getCustomPostBPMNParseListeners();
         if (bpmnParseListeners == null) {
-            bpmnParseListeners = new LinkedList<BpmnParseListener>();
+            bpmnParseListeners = new LinkedList<>();
             configuration.setCustomPostBPMNParseListeners(bpmnParseListeners);
         }
 
-        bpmnParseListeners.add(new PathCoverageParseListener());
+        bpmnParseListeners.add(new ElementCoverageParseListener());
     }
 
-    private static void initializeFlowNodeHandler(final ProcessEngineConfigurationImpl configuration) {
-        final FlowNodeHistoryEventHandler historyEventHandler = new FlowNodeHistoryEventHandler();
+    private static void initializeCoverageHistoryHandler(final ProcessEngineConfigurationImpl configuration) {
+        final CoverageHistoryEventHandler historyEventHandler = new CoverageHistoryEventHandler();
         configuration.setHistoryEventHandler(historyEventHandler);
     }
 
     private static void initializeCompensationEventHandler(final ProcessEngineConfigurationImpl configuration) {
         if (configuration.getCustomEventHandlers() == null) {
-            configuration.setCustomEventHandlers(new LinkedList<EventHandler>());
+            configuration.setCustomEventHandlers(new LinkedList<>());
         }
 
         configuration.getCustomEventHandlers().add(new CompensationEventCoverageHandler());
     }
+
 
 }

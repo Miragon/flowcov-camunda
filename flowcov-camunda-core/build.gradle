@@ -13,14 +13,14 @@ apply plugin: 'com.bmuschko.nexus'
 
 archivesBaseName = 'flowcov-camunda-core'
 group = "io.flowcov"
-version = "0.1.1"
+version = "0.2.0"
 
 publishing {
     publications {
         mavenJava(MavenPublication) {
             groupId = 'io.flowcov'
             artifactId = 'flowcov-camunda-core'
-            version = '0.1.1'
+            version = '0.2.0'
 
             from components.java
         }
@@ -92,8 +92,8 @@ sourceSets {
 
 dependencies {
 
-    compileOnly "org.camunda.bpm:camunda-engine:${camundaCompileVersion}"
-    compileOnly "org.camunda.bpm:camunda-engine-spring:${camundaCompileVersion}"
+    compileOnly "org.camunda.bpm:camunda-engine:${camundaVersion}"
+    compileOnly "org.camunda.bpm:camunda-engine-spring:${camundaVersion}"
     compileOnly "org.springframework:spring-context:${springVersion}"
 
     implementation 'com.google.code.gson:gson:2.8.6'

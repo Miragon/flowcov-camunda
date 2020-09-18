@@ -17,15 +17,12 @@
 package io.flowcov.camunda.util;
 
 import io.flowcov.camunda.api.Build;
-import io.flowcov.camunda.api.bpmn.BpmnModel;
-import io.flowcov.camunda.api.bpmn.BpmnTestClass;
-import io.flowcov.camunda.api.bpmn.BpmnTestMethod;
-import io.flowcov.camunda.api.bpmn.FlowNode;
+import io.flowcov.camunda.api.bpmn.*;
 import io.flowcov.camunda.api.dmn.DmnModel;
 import io.flowcov.camunda.api.dmn.DmnTestClass;
 import io.flowcov.camunda.api.dmn.DmnTestMethod;
 import io.flowcov.camunda.api.dmn.Rule;
-import io.flowcov.camunda.junit.rules.CoverageTestRunState;
+import io.flowcov.camunda.junit.FlowCovTestRunState;
 import io.flowcov.camunda.model.ClassCoverage;
 import lombok.val;
 import org.apache.commons.io.IOUtils;
@@ -62,7 +59,7 @@ public class CoverageReportUtil {
      * @param processEngine
      * @param coverageTestRunState
      */
-    public static void createClassReport(final ProcessEngine processEngine, final CoverageTestRunState coverageTestRunState) {
+    public static void createClassReport(final ProcessEngine processEngine, final FlowCovTestRunState coverageTestRunState) {
 
         final ClassCoverage coverage = coverageTestRunState.getClassCoverage();
         final String reportDirectory = getReportDirectoryPath();
@@ -119,30 +116,35 @@ public class CoverageReportUtil {
                 .values()
                 .stream()
                 .filter(m -> m.getName() != null).map(value -> {
-
+                    model.setTotalNodeCount(value.getProcessElementCount(processDefinition.getKey()));
                     val coveredFlowNodes = value.getCoveredFlowNodes(processDefinition.getKey())
                             .stream()
                             .map(node -> FlowNode.builder()
-                                    .ended(node.hasEnded())
+                                    .executionStartCounter(node.getExecutionStartCounter())
+                                    .executionEndCounter(node.getExecutionEndCoutner())
                                     .key(node.getElementId())
+                                    .type(node.getType())
                                     .build()
                             ).collect(Collectors.toList());
 
-                    val coveredSequenceFlowIds = value.getCoveredSequenceFlowIds(
-                            processDefinition.getKey());
+                    val coveredSequenceFlowIds = value.getCoveredSequenceFlows(
+                            processDefinition.getKey()).stream()
+                            .map(obj -> SequenceFlow.builder()
+                                    .key(obj.getTransitionId())
+                                    .executionStartCounter(obj.getExecutionStartCounter())
+                                    .build())
+                            .collect(Collectors.toList());
 
                     return BpmnTestMethod.builder()
                             .flowNodes(coveredFlowNodes)
-                            .sequenceFlowIds(coveredSequenceFlowIds)
+                            .sequenceFlows(coveredSequenceFlowIds)
                             .name(value.getName())
-                            .coverage(value.getCoveragePercentage(processDefinition.getKey()))
                             .build();
 
                 }).collect(Collectors.toList());
 
         final var testClass = BpmnTestClass.builder()
                 .name(testClazz)
-                .executionEndTime(LocalDateTime.now())
                 .testMethods(testMethods)
                 .build();
 

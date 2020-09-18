@@ -105,21 +105,6 @@ public class DecisionCoverage {
         this.coveredDmnRules.addAll(rules);
     }
 
-    /**
-     * Retrieves the coverage percentage for all elements.
-     *
-     * @return
-     */
-    public double getCoveragePercentage() {
-        return ((double) this.getNumberOfAllCovered()) / ((double) this.getNumberOfAllDefined());
-    }
-
-    public Set<String> getCoveredDmnRuleIds() {
-
-        return this.coveredDmnRules.stream()
-                .map(CoveredDmnRule::getRuleId)
-                .collect(Collectors.toSet());
-    }
 
     public DecisionDefinition getDecisionDefintion() {
         return decisionDefinition;
@@ -133,24 +118,5 @@ public class DecisionCoverage {
         return decisionDefinition.getKey();
     }
 
-
-    /**
-     * Retrieves the number of covered flow node and sequence flow elements.
-     *
-     * @return
-     */
-    private int getNumberOfAllCovered() {
-        return coveredDmnRules.size();
-    }
-
-    /**
-     * Retrieves the number of flow node and sequence flow elements for the
-     * process definition.
-     *
-     * @return
-     */
-    private int getNumberOfAllDefined() {
-        return definitionDecisionRules.size();
-    }
 
 }

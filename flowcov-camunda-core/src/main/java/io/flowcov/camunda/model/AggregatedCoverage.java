@@ -19,6 +19,7 @@ package io.flowcov.camunda.model;
 import org.camunda.bpm.engine.repository.DecisionDefinition;
 import org.camunda.bpm.engine.repository.ProcessDefinition;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -27,20 +28,12 @@ import java.util.Set;
 public interface AggregatedCoverage {
 
     /**
-     * Retrieves covered flow node IDs for the given process definition key.
-     *
-     * @param processDefinitionKey
-     * @return
-     */
-    Set<String> getCoveredFlowNodeIds(String processDefinitionKey);
-
-    /**
      * Retrieves covered flow nodes for the given process definition key.
      *
      * @param processDefinitionKey
      * @return
      */
-    Set<CoveredFlowNode> getCoveredFlowNodes(String processDefinitionKey);
+    List<CoveredFlowNode> getCoveredFlowNodes(String processDefinitionKey);
 
     /**
      * Retrieves covered sequence flow IDs for the given process definition key.
@@ -48,7 +41,7 @@ public interface AggregatedCoverage {
      * @param processDefinitionKey
      * @return
      */
-    Set<String> getCoveredSequenceFlowIds(String processDefinitionKey);
+    List<CoveredSequenceFlow> getCoveredSequenceFlows(String processDefinitionKey);
 
 
     /**
@@ -59,13 +52,6 @@ public interface AggregatedCoverage {
      */
     Set<CoveredDmnRule> getCoveredDecisionRules(String decisionKey);
 
-    /**
-     * Retrieves covered sequence flow IDs for the given process definition key.
-     *
-     * @param processDefinitionKey
-     * @return
-     */
-    Set<CoveredSequenceFlow> getCoveredSequenceFlows(String processDefinitionKey);
 
     /**
      * Retrieves the process definitions of the coverage.
@@ -82,18 +68,4 @@ public interface AggregatedCoverage {
      */
     Set<DecisionDefinition> getDecisionDefinitions();
 
-    /**
-     * Retrives the coverage percentage for all process definitions.
-     *
-     * @return
-     */
-    double getCoveragePercentage();
-
-    /**
-     * Retrieves the coverage percentage for the given process definition key.
-     *
-     * @param processDefinitionKey
-     * @return
-     */
-    double getCoveragePercentage(String processDefinitionKey);
 }

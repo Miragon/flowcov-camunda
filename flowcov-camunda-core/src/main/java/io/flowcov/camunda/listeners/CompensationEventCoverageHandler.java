@@ -16,7 +16,7 @@
 
 package io.flowcov.camunda.listeners;
 
-import io.flowcov.camunda.junit.rules.CoverageTestRunState;
+import io.flowcov.camunda.junit.FlowCovTestRunState;
 import io.flowcov.camunda.model.CoveredFlowNode;
 import io.flowcov.camunda.util.Api;
 import org.camunda.bpm.engine.impl.bpmn.helper.BpmnProperties;
@@ -27,29 +27,23 @@ import org.camunda.bpm.engine.impl.persistence.entity.ProcessDefinitionEntity;
 import org.camunda.bpm.engine.impl.pvm.process.ActivityImpl;
 
 import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
 
 /**
- * Compensation event handler registering compensation tasks and their source
- * boundary events.
+ * Handler for Compensation Boundary Events
  */
 public class CompensationEventCoverageHandler extends CompensationEventHandler {
 
-    private CoverageTestRunState coverageTestRunState;
+    private FlowCovTestRunState coverageTestRunState;
     private MethodHandle handleEvent;
 
-    /**
-     * @since 7.10.0
-     */
     @Override
-    public void handleEvent(EventSubscriptionEntity eventSubscription, Object payload, Object localPayload,
-                            String businessKey, CommandContext commandContext) {
-        addCompensationEventCoverage(eventSubscription);
+    public void handleEvent(final EventSubscriptionEntity eventSubscription, final Object payload, final Object localPayload,
+                            final String businessKey, final CommandContext commandContext) {
+        this.addCompensationEventCoverage(eventSubscription);
         super.handleEvent(eventSubscription, payload, localPayload, businessKey, commandContext);
     }
 
-    private void addCompensationEventCoverage(EventSubscriptionEntity eventSubscription) {
+    private void addCompensationEventCoverage(final EventSubscriptionEntity eventSubscription) {
         if (Api.Camunda.supportsCompensationEventCoverage()) {
 
             final ActivityImpl activity = eventSubscription.getActivity();
@@ -67,36 +61,15 @@ public class CompensationEventCoverageHandler extends CompensationEventHandler {
                 final String sourceEventId = sourceEvent.getActivityId();
 
                 // Register covered element
-                final CoveredFlowNode compensationBoundaryEvent = new CoveredFlowNode(processDefinitionKey, sourceEventId);
-                compensationBoundaryEvent.setEnded(true);
+                final CoveredFlowNode compensationBoundaryEvent = new CoveredFlowNode(processDefinitionKey, sourceEventId, sourceEventId + ":" + eventSubscription.getId(), "boundaryEvent");
                 coverageTestRunState.addCoveredElement(compensationBoundaryEvent);
+                coverageTestRunState.endCoveredElement(compensationBoundaryEvent);
 
             }
         }
     }
 
-    public void setCoverageTestRunState(CoverageTestRunState coverageTestRunState) {
+    public void setCoverageTestRunState(final FlowCovTestRunState coverageTestRunState) {
         this.coverageTestRunState = coverageTestRunState;
     }
-
-    /**
-     * Implementation for older Camunda versions prior to 7.10.0
-     */
-    public void handleEvent(EventSubscriptionEntity eventSubscription, Object payload, CommandContext commandContext) {
-        addCompensationEventCoverage(eventSubscription);
-
-        // invoke super.handleEvent() in a backwards compatible way
-        try {
-            if (handleEvent == null) {
-                handleEvent = MethodHandles.lookup()
-                        .findSpecial(CompensationEventHandler.class, "handleEvent",
-                                MethodType.methodType(void.class, EventSubscriptionEntity.class, Object.class, CommandContext.class),
-                                CompensationEventCoverageHandler.class);
-            }
-            handleEvent.invoke(this, eventSubscription, payload, commandContext);
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
-    }
-
 }

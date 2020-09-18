@@ -16,9 +16,16 @@
 
 package io.flowcov.camunda.model;
 
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * An element covered by a test.
  */
+@Getter
+@Setter
+@EqualsAndHashCode
 public abstract class CoveredElement {
 
     /**
@@ -27,18 +34,15 @@ public abstract class CoveredElement {
     protected String processDefinitionKey;
 
     /**
+     * The start time of the element
+     */
+    protected Integer executionStartCounter;
+
+    /**
      * Retrieves the element's ID.
      *
      * @return
      */
     public abstract String getElementId();
-
-    public String getProcessDefinitionKey() {
-        return processDefinitionKey;
-    }
-
-    public void setProcessDefinitionKey(String processDefinitionKey) {
-        this.processDefinitionKey = processDefinitionKey;
-    }
 
 }

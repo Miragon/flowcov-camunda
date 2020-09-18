@@ -28,5 +28,8 @@ import lombok.NoArgsConstructor;
 public class FlowNode {
 
     private String key;
-    private boolean ended;
+    private String type;
+    private Integer executionStartCounter;
+    private Integer executionEndCounter;
+
 }

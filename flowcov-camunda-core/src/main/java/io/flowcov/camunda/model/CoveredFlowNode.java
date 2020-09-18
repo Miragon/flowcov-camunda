@@ -16,75 +16,38 @@
 
 package io.flowcov.camunda.model;
 
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
 /**
  * An activity covered by a test.
  */
+@Getter
+@Setter
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
 public class CoveredFlowNode extends CoveredElement {
 
-    /**
-     * Element ID of the activity.
-     */
     private final String flowNodeId;
 
-    /**
-     * A flow node object is created in the coverage once it has started
-     * execution. This flag is set to true once the flow node has finished (end
-     * event).
-     */
-    private boolean ended = false;
+    private final String flowNodeInstanceId;
 
-    public CoveredFlowNode(String processDefinitionKey, String flowNodeId) {
+    private final String type;
+
+    private Integer executionEndCoutner;
+
+    public CoveredFlowNode(final String processDefinitionKey, final String flowNodeId, final String flowNodeInstanceId, final String type) {
         this.flowNodeId = flowNodeId;
         this.processDefinitionKey = processDefinitionKey;
+        this.flowNodeInstanceId = flowNodeInstanceId;
+        this.type = type;
     }
 
     @Override
     public String getElementId() {
         return flowNodeId;
-    }
-
-    public boolean hasEnded() {
-        return ended;
-    }
-
-    public void setEnded(boolean ended) {
-        this.ended = ended;
-    }
-
-    @Override
-    public String toString() {
-        return "CoveredActivity [flowNodeId=" + flowNodeId + ", processDefinitionKey=" + processDefinitionKey + "]";
-    }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((flowNodeId == null) ? 0 : flowNodeId.hashCode());
-        result = prime * result + ((processDefinitionKey == null) ? 0 : processDefinitionKey.hashCode());
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        CoveredFlowNode other = (CoveredFlowNode) obj;
-        if (flowNodeId == null) {
-            if (other.flowNodeId != null)
-                return false;
-        } else if (!flowNodeId.equals(other.flowNodeId))
-            return false;
-        if (processDefinitionKey == null) {
-            if (other.processDefinitionKey != null)
-                return false;
-        } else if (!processDefinitionKey.equals(other.processDefinitionKey))
-            return false;
-        return true;
     }
 
 }
