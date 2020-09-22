@@ -13,14 +13,14 @@ apply plugin: 'com.bmuschko.nexus'
 
 archivesBaseName = 'flowcov-camunda-core'
 group = "io.flowcov"
-version = "0.2.0"
+version = "0.2.1"
 
 publishing {
     publications {
         mavenJava(MavenPublication) {
             groupId = 'io.flowcov'
             artifactId = 'flowcov-camunda-core'
-            version = '0.2.0'
+            version = '0.2.1'
 
             from components.java
         }
