@@ -36,7 +36,8 @@ import org.junit.Rule;
 import org.junit.runner.Description;
 
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -64,16 +65,6 @@ public class FlowCovProcessEngineRule extends ProcessEngineRule {
     private FlowCovTestRunStateFactory coverageTestRunStateFactory = new FlowCovTestRunStateFactory();
 
     /**
-     * Matchers to be asserted on the class coverage percentage.
-     */
-    private Collection<Matcher<Double>> classCoverageAssertionMatchers = new LinkedList<Matcher<Double>>();
-
-    /**
-     * Matchers to be asserted on the individual test method coverages.
-     */
-    private Map<String, Collection<Matcher<Double>>> testMethodNameToCoverageMatchers = new HashMap<String, Collection<Matcher<Double>>>();
-
-    /**
      * A list of process definition keys excluded from the test run.
      */
     private List<String> excludedProcessDefinitionKeys;
@@ -84,25 +75,6 @@ public class FlowCovProcessEngineRule extends ProcessEngineRule {
 
     FlowCovProcessEngineRule(final ProcessEngine processEngine) {
         super(processEngine);
-    }
-
-    /**
-     * Adds an assertion for a test method's coverage percentage.
-     *
-     * @param testMethodName
-     * @param matcher
-     */
-    public void addTestMethodCoverageAssertionMatcher(final String testMethodName, final Matcher<Double> matcher) {
-
-        // JDK7 ifAbsent
-        Collection<Matcher<Double>> matchers = testMethodNameToCoverageMatchers.get(testMethodName);
-        if (matchers == null) {
-            matchers = new LinkedList<Matcher<Double>>();
-            testMethodNameToCoverageMatchers.put(testMethodName, matchers);
-        }
-
-        matchers.add(matcher);
-
     }
 
     public void setExcludedProcessDefinitionKeys(final List<String> excludedProcessDefinitionKeys) {
