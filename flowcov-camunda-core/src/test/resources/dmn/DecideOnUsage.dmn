@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/" xmlns:camunda="http://camunda.org/schema/1.0/dmn" id="Definitions_1nl568q" name="DRD" namespace="http://camunda.org/schema/1.0/dmn" exporter="Camunda Modeler" exporterVersion="4.0.0">
+  <decision id="DecideOnUsage" name="Decide on usage">
+    <decisionTable id="DecisionTable_02fxkci" hitPolicy="FIRST">
+      <input id="Input_1" label="Access to the cloud" camunda:inputVariable="cloudAccess">
+        <inputExpression id="InputExpression_1" typeRef="boolean">
+          <text></text>
+        </inputExpression>
+      </input>
+      <input id="InputClause_1c4knn8" label="Open Source project" camunda:inputVariable="openSource">
+        <inputExpression id="LiteralExpression_1v9hc9o" typeRef="boolean">
+          <text></text>
+        </inputExpression>
+      </input>
+      <output id="Output_1" label="Use Cloud" name="useCloud" typeRef="boolean" />
+      <rule id="DecisionRule_07a2mpj">
+        <inputEntry id="UnaryTests_0jd1824">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_053hz2y">
+          <text>true</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1qjf97t">
+          <text>true</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0mmiivc">
+        <inputEntry id="UnaryTests_1ucf8ae">
+          <text>false</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_03flrzq">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0uaap7k">
+          <text>false</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_02asive">
+        <inputEntry id="UnaryTests_1wh14ih">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0c6vmc6">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0fz4xud">
+          <text>true</text>
+        </outputEntry>
+      </rule>
+    </decisionTable>
+  </decision>
+</definitions>

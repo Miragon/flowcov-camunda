@@ -1,5 +1,6 @@
-rootProject.name="flowcov-camunda"
+rootProject.name = "flowcov-camunda"
 
 include ":flowcov-camunda-core"
 
 project(":flowcov-camunda-core").projectDir = new File("./flowcov-camunda-core")
+
