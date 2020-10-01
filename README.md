@@ -1,5 +1,5 @@
 <p align="center">
-    :fire: &nbsp; **Read our product announcement on the [Official Camunda Blog](https://camunda.com/blog/2020/09/traceable-test-coverage-for-all-process-stakeholders/)!**
+    :fire: &nbsp; <b>Read our product announcement on the <a href="https://camunda.com/blog/2020/09/traceable-test-coverage-for-all-process-stakeholders/">Official Camunda Blog</a>!</b>
 </p>
 
 <p align="center">
@@ -21,7 +21,8 @@
   <br />
   <a href="https://github.com/FlowSquad/flowcov-camunda/issues"><b>Report Bug »</b></a>
   <br />
-  <a href="https://www.flowsquad.io/">
+  <br />
+  <a href="https://flowsquad.io/">
     <img src="img/logo.svg" alt="Logo" width="150" height="50" />
   </a>
 </p>
@@ -29,9 +30,8 @@
 <br />
 <br />
 
+<h4 align="center">:warning: FlowCov is still in beta and subject to change!</b>
 <p align="center">
-  :warning: &nbsp; **FlowCov is still in beta and subject to change!**
-  <br />
   We reserve the right to perform a reset until the end of the beta phase in which case all data will be lost. We will announce this at least one week in advance.
 </p>
 
@@ -40,7 +40,6 @@
 
 <h3 align="center">Table of Contents</h3>
 <p align="center">
-
   <a href="#summary">Summary</a>
   ·
   <a href="#introduction">Introduction</a>
@@ -80,6 +79,9 @@ However, there are still a lot of features you are going to miss when using it i
 - :white_check_mark: &nbsp; **Display of changes in workflow coverage over time**
 - :white_check_mark: &nbsp; **Available for free in the FlowCov cloud**
 - :white_check_mark: &nbsp; **On-Premise hosting available**
+
+<br />
+<br />
 
 > We'd also like to thank the creators of [Camunda BPM Process Test Coverage](https://github.com/camunda/camunda-bpm-process-test-coverage), which we took as an example for the coverage data generation.
 
