@@ -15,9 +15,9 @@
   <br />
   <br />
   <a href="https://app.flowcov.io"><b>Open the App »</b></a>
-  &nbsp;<b>·</b>&nbsp;
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
   <a href="https://docs.flowcov.io"><b>Explore the Docs »</b></a>
-  &nbsp;<b>·</b>&nbsp;
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
   <a href="https://github.com/FlowSquad/flowcov-camunda/issues"><b>Report Bug »</b></a>
 </p>
 
