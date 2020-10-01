@@ -109,7 +109,6 @@ public class FlowCovProcessEngineRule extends ProcessEngineRule {
 
     }
 
-
     /**
      * Validates the annotation of the rule field in the test class.
      *

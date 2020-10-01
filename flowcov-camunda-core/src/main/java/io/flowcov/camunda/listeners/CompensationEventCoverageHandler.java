@@ -33,8 +33,10 @@ import java.lang.invoke.MethodHandle;
  */
 public class CompensationEventCoverageHandler extends CompensationEventHandler {
 
+    /**
+     * The state of the currently running coverage test.
+     */
     private FlowCovTestRunState coverageTestRunState;
-    private MethodHandle handleEvent;
 
     @Override
     public void handleEvent(final EventSubscriptionEntity eventSubscription, final Object payload, final Object localPayload,

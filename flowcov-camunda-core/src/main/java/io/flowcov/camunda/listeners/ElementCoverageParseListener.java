@@ -191,13 +191,6 @@ public class ElementCoverageParseListener extends AbstractBpmnParseListener {
         this.addExecutionListener(activity);
     }
 
-//    @Override
-//    public void parseProcess(final Element processElement, final ProcessDefinitionEntity processDefinition) {
-//        for (final String event : EXECUTION_EVENTS) {
-//            processDefinition.addListener(event, executionListener);
-//        }
-//    }
-
     @Override
     public void parseReceiveTask(final Element receiveTaskElement, final ScopeImpl scope, final ActivityImpl activity) {
         this.addExecutionListener(activity);

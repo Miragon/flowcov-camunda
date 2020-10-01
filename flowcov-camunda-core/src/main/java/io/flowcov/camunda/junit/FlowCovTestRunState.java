@@ -62,7 +62,7 @@ public class FlowCovTestRunState {
      *
      * @param coveredElement
      */
-    public void addCoveredElement(/* @NotNull */ final CoveredElement coveredElement) {
+    public void addCoveredElement(final CoveredElement coveredElement) {
 
         executionCounter++;
         coveredElement.setExecutionStartCounter(executionCounter);
@@ -131,25 +131,6 @@ public class FlowCovTestRunState {
     }
 
     /**
-     * Retrieves the coverage for a test method.
-     *
-     * @param testName
-     * @return
-     */
-    public MethodCoverage getTestMethodCoverage(final String testName) {
-        return classCoverage.getTestMethodCoverage(testName);
-    }
-
-    /**
-     * Retrieves the currently executing test method coverage.
-     *
-     * @return
-     */
-    public MethodCoverage getCurrentTestMethodCoverage() {
-        return classCoverage.getTestMethodCoverage(currentTestMethodName);
-    }
-
-    /**
      * Retrieves the class coverage.
      *
      * @return
@@ -157,15 +138,6 @@ public class FlowCovTestRunState {
     public ClassCoverage getClassCoverage() {
         return classCoverage;
 
-    }
-
-    /**
-     * Retrieves the name of the currently executing test method.
-     *
-     * @return
-     */
-    public String getCurrentTestMethodName() {
-        return currentTestMethodName;
     }
 
     /**
