@@ -28,9 +28,10 @@
 <br />
 
 <p align="center">
-    <img src="img/app.png" alt="Logo" align="center" />
+    <img src="img/app.png" alt="Screenshot" align="center" />
 </p>
 
+<br />
 <br />
 
 ---
