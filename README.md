@@ -11,15 +11,17 @@
 <h3 align="center">FlowCov Camunda Testing Rule</h3>
   
 <p align="center">
-  Improve your workflow and decision models by testing them just as you test your code. Using this testing library you can generate test coverage reports as part of your regular build that you can upload to FlowCov.io to create beautiful visual reports.
+  Improve your workflow and decision models by testing them just as you test your code. Using this testing library you can generate test coverage reports as part of your regular build that you can upload to FlowCov.io to create a beautiful coverage dashboard for your project.
   <br />
   <br />
   <a href="https://app.flowcov.io"><b>Open the App »</b></a>
-  <br />
+  &nbsp;<b>·</b>&nbsp;
   <a href="https://docs.flowcov.io"><b>Explore the Docs »</b></a>
-  <br />
+  &nbsp;<b>·</b>&nbsp;
   <a href="https://github.com/FlowSquad/flowcov-camunda/issues"><b>Report Bug »</b></a>
 </p>
+
+<br />
 
 <h3 align="center">Table of Contents</h3>
 <p align="center">
@@ -42,6 +44,8 @@
 <p align="center">
     <img src="img/app.png" alt="Logo" align="center" />
 </p>
+
+<br />
 
 ---
 
