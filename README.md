@@ -1,19 +1,18 @@
-> :fire: **Read our product announcement on the [Official Camunda Blog](https://camunda.com/blog/2020/09/traceable-test-coverage-for-all-process-stakeholders/)!**
+<p align="center">
+    :fire: &nbsp; **Read our product announcement on the [Official Camunda Blog](https://camunda.com/blog/2020/09/traceable-test-coverage-for-all-process-stakeholders/)!**
+</p>
 
 <p align="center">
   <img src="img/flowcov.svg" alt="Logo" width="300" height="100">
-  <br />
-  Powered By
-  <br />
-  <a href="https://www.flowsquad.io/">
-    <img src="img/logo.svg" alt="Logo" width="150" height="50">
-  </a>
+</p>
 
-  <h3 align="center">FlowCov Camunda Testing Rule</h3>
-
-  Using this testing library you can generate test coverage reports as part of your regular build that you can upload to FlowCov.io to create beautiful visual reports.
-  <br />
+<h3 align="center">FlowCov Camunda Testing Rule</h3>
+  
+<p align="center">
   Improve your workflow and decision models by testing them just as you test your code. FlowCov provides highly integrated tools to create, merge, archive and display coverage reports.
+  <br />
+  <br />
+  Using this testing library you can generate test coverage reports as part of your regular build that you can upload to FlowCov.io to create beautiful visual reports.
   <br />
   <br />
   <a href="https://app.flowcov.io"><b>Open the App »</b></a>
@@ -21,13 +20,26 @@
   <a href="https://docs.flowcov.io"><b>Explore the Docs »</b></a>
   <br />
   <a href="https://github.com/FlowSquad/flowcov-camunda/issues"><b>Report Bug »</b></a>
+  <br />
+  <a href="https://www.flowsquad.io/">
+    <img src="img/logo.svg" alt="Logo" width="150" height="50" />
+  </a>
 </p>
 
-> :warning: **FlowCov is still in beta and subject to change!**  
-> We reserve the right to perform a reset until the end of the beta phase in which case all data will be lost. We will announce this at least one week in advance.
+<br />
+<br />
 
 <p align="center">
-  <h3 align="center">Table of Contents</h3>
+  :warning: &nbsp; **FlowCov is still in beta and subject to change!**
+  <br />
+  We reserve the right to perform a reset until the end of the beta phase in which case all data will be lost. We will announce this at least one week in advance.
+</p>
+
+<br />
+<br />
+
+<h3 align="center">Table of Contents</h3>
+<p align="center">
 
   <a href="#summary">Summary</a>
   ·
@@ -44,7 +56,12 @@
   <a href="#license">License</a>
 </p>
 
-![FlowCov Screenshot][img/app.png]
+<p align="center">
+    <img src="img/app.png" alt="Logo" align="center" />
+</p>
+
+<br />
+<br />
 
 ## Introduction
 
