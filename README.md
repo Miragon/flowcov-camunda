@@ -36,7 +36,7 @@
 
 ---
 
-<h4 align="center">:warning: FlowCov is still in beta and subject to change!</h4>
+<h4 align="center">:warning: &nbsp; FlowCov is still in beta and subject to change!</h4>
 <p align="center">
   We reserve the right to perform a reset until the end of the beta phase in which case all data will be lost.
   <br /> 
