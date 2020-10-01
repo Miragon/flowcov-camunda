@@ -21,17 +21,6 @@
   <a href="https://github.com/FlowSquad/flowcov-camunda/issues"><b>Report Bug »</b></a>
 </p>
 
-<br />
-<br />
-
-<h4 align="center">:warning: FlowCov is still in beta and subject to change!</h4>
-<p align="center">
-  We reserve the right to perform a reset until the end of the beta phase in which case all data will be lost. We will announce this at least one week in advance.
-</p>
-
-<br />
-<br />
-
 <h3 align="center">Table of Contents</h3>
 <p align="center">
   <a href="#summary">Summary</a>
@@ -59,6 +48,14 @@
 <br />
 <br />
 
+<h4 align="center">:warning: FlowCov is still in beta and subject to change!</h4>
+<p align="center">
+  We reserve the right to perform a reset until the end of the beta phase in which case all data will be lost. We will announce this at least one week in advance.
+</p>
+
+<br />
+<br />
+
 ## Introduction
 
 Code Coverage has been established as a reliable indicator for code quality over the last few years. However, this does not only apply to testing source code. If you're using BPMN to model and automate your business processes, you should write appropriate tests for these as well. 
@@ -77,7 +74,6 @@ However, there are still a lot of features you are going to miss when using it i
 - :white_check_mark: &nbsp; **Available for free in the FlowCov cloud**
 - :white_check_mark: &nbsp; **On-Premise hosting available**
 
-<br />
 <br />
 
 > We'd also like to thank the creators of [Camunda BPM Process Test Coverage](https://github.com/camunda/camunda-bpm-process-test-coverage), which we took as an example for the coverage data generation.
