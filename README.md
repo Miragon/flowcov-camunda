@@ -42,6 +42,8 @@
 
 ---
 
+<br />
+
 <h3 align="center">Table of Contents</h3>
 <p align="center">
   <a href="#introduction">Introduction</a>
