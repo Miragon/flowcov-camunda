@@ -11,7 +11,10 @@
 <h3 align="center">FlowCov Camunda Testing Rule</h3>
   
 <p align="center">
-  Improve your workflow and decision models by testing them just as you test your code. Using this testing library you can generate test coverage reports as part of your regular build that you can upload to FlowCov.io to create a beautiful coverage dashboard for your project.
+  Improve your workflow and decision models by testing them just as you test your code. 
+  <br />
+  Using this testing library you can generate test coverage reports as part of your regular build<br />
+  that you can upload to <b><a href="https://flowcov.io">FlowCov.io</a></b> to create a beautiful coverage dashboard for your project.
   <br />
   <br />
   <a href="https://app.flowcov.io"><b>Open the App »</b></a>
@@ -28,18 +31,16 @@
     <img src="img/app.png" alt="Logo" align="center" />
 </p>
 
-<br />
-
 ---
 
 <h4 align="center">:warning: FlowCov is still in beta and subject to change!</h4>
 <p align="center">
-  We reserve the right to perform a reset until the end of the beta phase in which case all data will be lost. We will announce this at least one week in advance.
+  We reserve the right to perform a reset until the end of the beta phase in which case all data will be lost.
+  <br /> 
+  We will announce this at least one week in advance.
 </p>
 
 ---
-
-<br />
 
 <h3 align="center">Table of Contents</h3>
 <p align="center">
