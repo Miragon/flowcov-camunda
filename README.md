@@ -23,8 +23,6 @@
 
 <h3 align="center">Table of Contents</h3>
 <p align="center">
-  <a href="#summary">Summary</a>
-  ·
   <a href="#introduction">Introduction</a>
   ·
   <a href="#getting-started">Getting Started</a>
@@ -45,15 +43,15 @@
     <img src="img/app.png" alt="Logo" align="center" />
 </p>
 
-<br />
-<br />
+---
 
 <h4 align="center">:warning: FlowCov is still in beta and subject to change!</h4>
 <p align="center">
   We reserve the right to perform a reset until the end of the beta phase in which case all data will be lost. We will announce this at least one week in advance.
 </p>
 
-<br />
+---
+
 <br />
 
 ## Introduction
