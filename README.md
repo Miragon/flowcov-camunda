@@ -2,6 +2,8 @@
     :fire: &nbsp; <b>Read our product announcement on the <a href="https://camunda.com/blog/2020/09/traceable-test-coverage-for-all-process-stakeholders/">Official Camunda Blog</a>!</b>
 </p>
 
+<br />
+
 <p align="center">
   <img src="img/flowcov.svg" alt="Logo" width="300" height="100">
 </p>
@@ -9,10 +11,7 @@
 <h3 align="center">FlowCov Camunda Testing Rule</h3>
   
 <p align="center">
-  Improve your workflow and decision models by testing them just as you test your code. FlowCov provides highly integrated tools to create, merge, archive and display coverage reports.
-  <br />
-  <br />
-  Using this testing library you can generate test coverage reports as part of your regular build that you can upload to FlowCov.io to create beautiful visual reports.
+  Improve your workflow and decision models by testing them just as you test your code. Using this testing library you can generate test coverage reports as part of your regular build that you can upload to FlowCov.io to create beautiful visual reports.
   <br />
   <br />
   <a href="https://app.flowcov.io"><b>Open the App »</b></a>
@@ -20,17 +19,12 @@
   <a href="https://docs.flowcov.io"><b>Explore the Docs »</b></a>
   <br />
   <a href="https://github.com/FlowSquad/flowcov-camunda/issues"><b>Report Bug »</b></a>
-  <br />
-  <br />
-  <a href="https://flowsquad.io/">
-    <img src="img/logo.svg" alt="Logo" width="150" height="50" />
-  </a>
 </p>
 
 <br />
 <br />
 
-<h4 align="center">:warning: FlowCov is still in beta and subject to change!</b>
+<h4 align="center">:warning: FlowCov is still in beta and subject to change!</h4>
 <p align="center">
   We reserve the right to perform a reset until the end of the beta phase in which case all data will be lost. We will announce this at least one week in advance.
 </p>
@@ -54,6 +48,9 @@
   ·
   <a href="#license">License</a>
 </p>
+
+<br />
+<br />
 
 <p align="center">
     <img src="img/app.png" alt="Logo" align="center" />
