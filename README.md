@@ -22,23 +22,6 @@
 </p>
 
 <br />
-
-<h3 align="center">Table of Contents</h3>
-<p align="center">
-  <a href="#introduction">Introduction</a>
-  ·
-  <a href="#getting-started">Getting Started</a>
-  ·
-  <a href="#roadmap">Roadmap</a>
-  ·
-  <a href="#feedback">Feedback</a>
-  ·
-  <a href="#contributing">Contributing</a>
-  ·
-  <a href="#license">License</a>
-</p>
-
-<br />
 <br />
 
 <p align="center">
@@ -55,6 +38,23 @@
 </p>
 
 ---
+
+<br />
+
+<h3 align="center">Table of Contents</h3>
+<p align="center">
+  <a href="#introduction">Introduction</a>
+  ·
+  <a href="#getting-started">Getting Started</a>
+  ·
+  <a href="#roadmap">Roadmap</a>
+  ·
+  <a href="#feedback">Feedback</a>
+  ·
+  <a href="#contributing">Contributing</a>
+  ·
+  <a href="#license">License</a>
+</p>
 
 <br />
 
