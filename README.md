@@ -31,6 +31,8 @@
     <img src="img/app.png" alt="Logo" align="center" />
 </p>
 
+<br />
+
 ---
 
 <h4 align="center">:warning: FlowCov is still in beta and subject to change!</h4>
