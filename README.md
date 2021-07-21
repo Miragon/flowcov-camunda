@@ -12,7 +12,7 @@
     Simply add our testing library to your camunda-projects and generate coverage reports with every build.
     <br />
     <br />
-    <a href="https://flowcov.io/docs"><strong>Explore the docs »</strong></a>
+    <a href="https://docs.flowcov.io"><strong>Explore the docs »</strong></a>
     <br />
     <br />
     <a href="https://app.flowcov.io">View App</a>
@@ -54,7 +54,7 @@ Many thanks to the creators of the [Camunda BPM Process Test Coverage](https://g
 <!-- GETTING STARTED -->
 ## Getting Started
 
-You can find a detailed Getting Started Guide on our <a href="https://flowcov.io/docs">Website</a>.
+You can find a detailed Getting Started Guide on our <a href="https://docs.flowcov.io">Website</a>.
 
 
 <!-- ROADMAP -->
